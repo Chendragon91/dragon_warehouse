@@ -1,0 +1,11 @@
+# Kafka 服务器地址 (根据实际情况修改)
+kafka.bootstrap.servers=cdh01:9092
+
+# Topic 配置
+REALTIME.KAFKA.LOG.TOPIC=realtime_log
+kafka.dirty.topic=dirty_data
+kafka.err.log=error_log
+kafka.start.log=start_log
+kafka.display.log=display_log
+kafka.action.log=action_log
+kafka.page.topic=page_views
