@@ -27,6 +27,10 @@ kafka.action.log=action_log
 kafka.page.topic=ods_page_log
 kafka.cdc.db.topic=ods_professional
 kafka.dwd.comment.info=dwd_dic_comment_info
+kafka.dwd.cart.info=dwd_cart_info
+kafka.dwd.order.info=dwd_order_info
+kafka.dwd.cancel.order=dwd_cancel_order
+kafka.dwd.payment.info=dwd_payment_info
 
 # Zookeeper 本地配置
 zookeeper.server.host.list=cdh01:2181
@@ -39,5 +43,5 @@ ali.pwd=
 
 
 # HBase配置
-hbase.namespace=da
+hbase.namespace=default
 

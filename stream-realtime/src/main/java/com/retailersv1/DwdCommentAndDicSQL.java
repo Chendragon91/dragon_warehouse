@@ -7,7 +7,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
-public class DwdHbaseAndMysqlCommentAndDicSQL {
+public class DwdCommentAndDicSQL {
     private static final String ODS_KAFKA_TOPIC = ConfigUtils.getString("kafka.cdc.db.topic");
     private static final String DWD_COMMENT_INFO = ConfigUtils.getString("kafka.dwd.comment.info");
 
@@ -19,7 +19,7 @@ public class DwdHbaseAndMysqlCommentAndDicSQL {
         StreamTableEnvironment tEnv = StreamTableEnvironment.create(env);
 
         // 1. 创建ODS层Kafka源表（消费评论表CDC数据）
-        tEnv.executeSql("CREATE TABLE ods_ecommerce_order (\n" +
+        tEnv.executeSql("CREATE TABLE ods_professional (\n" +
                 "  `op` STRING,\n" +
                 "  `before` MAP<STRING,STRING>,\n" +
                 "  `after` MAP<STRING,STRING>,\n" +
@@ -39,7 +39,7 @@ public class DwdHbaseAndMysqlCommentAndDicSQL {
                 "`after`['comment_txt'] comment_txt,\n" +
                 "ts_ms,\n" +
                 "proc_time\n" +
-                "from ods_ecommerce_order\n" +
+                "from ods_professional\n" +
                 "where `source`['table'] = 'comment_info'");
 //        commentInfo.execute().print();
         // 将表对象注册到表执行环境中
@@ -64,7 +64,7 @@ public class DwdHbaseAndMysqlCommentAndDicSQL {
                 "FROM comment_info AS c\n" +
                 "  JOIN base_dic FOR SYSTEM_TIME AS OF c.proc_time AS dic\n" +
                 "    ON c.appraise = dic.dic_code");
-        joinTable.execute().print();
+//        joinTable.execute().print();
 
 
         // 将关联后的表数据写入 kafka
