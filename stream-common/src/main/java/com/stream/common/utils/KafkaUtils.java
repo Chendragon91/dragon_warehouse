@@ -2,9 +2,11 @@ package com.stream.common.utils;
 
 
 import com.alibaba.fastjson.JSONObject;
+
 import org.apache.flink.api.common.serialization.DeserializationSchema;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;
 import org.apache.flink.connector.kafka.sink.KafkaSink;
 import org.apache.flink.connector.kafka.source.KafkaSource;
@@ -22,6 +24,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -144,6 +147,23 @@ public final class KafkaUtils {
                 .build();
     }
 
+    public static KafkaSink<Tuple2<JSONObject, TableProcessDwd>>  getKafkaSinkDwd(){
+        KafkaSink<Tuple2<JSONObject, TableProcessDwd>> kafkaSink = KafkaSink.<Tuple2<JSONObject, TableProcessDwd>>builder()
+                .setBootstrapServers(ConfigUtils.getString("kafka.bootstrap.servers"))
+                .setRecordSerializer(new KafkaRecordSerializationSchema<Tuple2<JSONObject, TableProcessDwd>>() {
+                    @Nullable
+                    @Override
+                    public ProducerRecord<byte[], byte[]> serialize(Tuple2<JSONObject, TableProcessDwd> tup2, KafkaSinkContext context, Long timestamp) {
+                        JSONObject jsonObj = tup2.f0;
+                        TableProcessDwd tp = tup2.f1;
+                        String topic = tp.getSinkTable();
+                        return new ProducerRecord<>(topic, jsonObj.toJSONString().getBytes());
+                    }
+
+                })
+                .build();
+        return kafkaSink;
+    }
 
     public static class SafeStringDeserializationSchema implements DeserializationSchema<String> {
 

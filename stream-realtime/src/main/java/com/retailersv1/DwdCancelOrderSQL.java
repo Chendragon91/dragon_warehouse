@@ -11,30 +11,45 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import java.time.Duration;
 
 public class DwdCancelOrderSQL {
-    private static String TOPIC_DB = ConfigUtils.getString("kafka.cdc.db.topic");
-    private static String DWD_CANCEL_ORDER = ConfigUtils.getString("kafka.dwd.cancel.order");
-    private static String DWD_ORDER_TOPIC = ConfigUtils.getString("kafka.dwd.order.info");
+    private static final String ODS_KAFKA_TOPIC = ConfigUtils.getString("kafka.cdc.db.topic");
+    private static final String DWD_TRADE_ORDER_CANCEL_DETAIL = ConfigUtils.getString("kafka.dwd.cancel.order_detail");
+    private static final String DWD_TRADE_ORDER_DETAIL = ConfigUtils.getString("kafka.dwd.order.detail");
+
 
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         EnvironmentSettingUtils.defaultParameter(env);
-        StreamTableEnvironment tenv = StreamTableEnvironment.create(env);
-        tenv.getConfig().setIdleStateRetention(Duration.ofSeconds(30 * 60 + 5));
+
+        StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
+        // 设置状态的保存时长
+        tableEnv.getConfig().setIdleStateRetention(Duration.ofSeconds(30*60+5));
         env.setStateBackend(new MemoryStateBackend());
 
-        tenv.executeSql("create table ods_professional(\n" +
-                "    `op` string,\n" +
-                "    `before` map<string,string>,\n" +
-                "    `after` map<string,string>,\n" +
-                "    `source` map<string,string>,\n" +
-                "    `ts_ms` bigint,\n" +
-                "    proc_time as proctime()\n" +
-                ")" + SQLUtil.getKafka(TOPIC_DB, "test"));
-//        tenv.executeSql("select * from ods_professional where `source`['table'] = 'order_info'" +
-//                "and `op`='u'").print();
+        tableEnv.executeSql("CREATE TABLE ods_professional (\n" +
+                "  `op` STRING,\n" +
+                "  `before` MAP<STRING,STRING>,\n" +
+                "  `after` MAP<STRING,STRING>,\n" +
+                "  `source` MAP<STRING,STRING>,\n" +
+                "  `ts_ms` BIGINT,\n" +
+                "   proc_time AS proctime()" +
+                ")" + SQLUtil.getKafka(ODS_KAFKA_TOPIC, "test"));
 
-        tenv.executeSql(
-                "create table dwd_order_info(" +
+        // 2. 从 topic_db 过滤出订单取消数据
+        Table orderCancel = tableEnv.sqlQuery("select " +
+                " `after`['id'] id, " +
+                " `after`['operate_time'] operate_time, " +
+                " `ts_ms` " +
+                "from ods_professional " +
+                "where `source`['table']='order_info' " +
+                "and `op` = 'u' " +
+                "and `before`['order_status']='1001' " +
+                "and `after`['order_status']='1003' ");
+        tableEnv.createTemporaryView("order_cancel", orderCancel);
+//        orderCancel.execute().print();
+
+        // 3. 读取 dwd 层下单事务事实表数据
+        tableEnv.executeSql(
+                "create table dwd_order_detail(" +
                         "id string," +
                         "order_id string," +
                         "user_id string," +
@@ -51,26 +66,12 @@ public class DwdCancelOrderSQL {
                         "split_activity_amount string," +
                         "split_coupon_amount string," +
                         "split_total_amount string," +
-                        "ts bigint"+
-                        ")" + SQLUtil.getKafka(DWD_ORDER_TOPIC, "test"));
+                        "ts bigint " +
+                        ")" + SQLUtil.getKafka(DWD_TRADE_ORDER_DETAIL, "retailersv_dwd_order_cancel_detail"));
 
-//        tenv.executeSql("select * from dwd_order_info").print();
-
-
-        Table orderCancel = tenv.sqlQuery("select " +
-                " `after`['id'] id, " +
-                " `after`['operate_time'] operate_time, " +
-                " `ts_ms` as ts " +  // 设置别名ts
-                "from ods_professional " +
-                "where `source`['table']='order_info' " +
-                "and `op`='u' " +
-                "and `before`['order_status']='1001' " +
-                "and `after`['order_status']='1003' ");
-        tenv.createTemporaryView("order_cancel", orderCancel);
-
-//        orderCancel.execute().print();
-
-        Table result = tenv.sqlQuery(
+//        tableEnv.executeSql("select * from dwd_trade_order_detail").print();
+        // 4. 订单取消表和下单表进行 join
+        Table result = tableEnv.sqlQuery(
                 "select  " +
                         "od.id," +
                         "od.order_id," +
@@ -81,22 +82,23 @@ public class DwdCancelOrderSQL {
                         "od.activity_id," +
                         "od.activity_rule_id," +
                         "od.coupon_id," +
-                        "date_format(oc.operate_time, 'yyyy-MM-dd') order_cancel_date_id," +
-                        "oc.operate_time as cancel_time," +
+                        "date_format(FROM_UNIXTIME(cast(oc.operate_time as bigint) / 1000), 'yyyy-MM-dd') order_cancel_date_id," +
+                        "oc.operate_time," +
                         "od.sku_num," +
                         "od.split_original_amount," +
                         "od.split_activity_amount," +
                         "od.split_coupon_amount," +
                         "od.split_total_amount," +
-                        "oc.ts " +
-                        "from dwd_order_info od " +
+                        "oc.ts_ms " +
+                        "from dwd_order_detail od " +
                         "join order_cancel oc " +
                         "on od.order_id=oc.id ");
 
 //        result.execute().print();
 
-        tenv.executeSql(
-                "create table " + DWD_CANCEL_ORDER + "(" +
+        // 5. 写出
+        tableEnv.executeSql(
+                "create table "+DWD_TRADE_ORDER_CANCEL_DETAIL+"(" +
                         "id string," +
                         "order_id string," +
                         "user_id string," +
@@ -113,10 +115,10 @@ public class DwdCancelOrderSQL {
                         "split_activity_amount string," +
                         "split_coupon_amount string," +
                         "split_total_amount string," +
-                        "ts bigint, " +
-                        "PRIMARY KEY (id) NOT ENFORCED" +
-                        ")" + SQLUtil.getUpsertKafkaDDL(DWD_CANCEL_ORDER));
+                        "ts bigint ," +
+                        "primary key(id) not enforced " +
+                        ")" + SQLUtil.getUpsertKafkaDDL(DWD_TRADE_ORDER_CANCEL_DETAIL));
 
-        result.executeInsert(DWD_CANCEL_ORDER);
+        result.executeInsert(DWD_TRADE_ORDER_CANCEL_DETAIL);
     }
 }

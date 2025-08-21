@@ -9,7 +9,7 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 public class DwdCartInfoSQL {
     private static String TOPIC_DB = ConfigUtils.getString("kafka.cdc.db.topic");
-    private static String DWD_KAFKA_TOPIC = ConfigUtils.getString("kafka.dwd.comment.info");
+    private static String DWD_KAFKA_TOPIC = ConfigUtils.getString("kafka.dwd.cart.info");
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         EnvironmentSettingUtils.defaultParameter( env);

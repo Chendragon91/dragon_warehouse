@@ -1,0 +1,759 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (malloc) failed to allocate 2426256 bytes for Chunk::new
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   The process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+#   JVM is running with Zero Based Compressed Oops mode in which the Java heap is
+#     placed in the first 32GB address space. The Java Heap base address is the
+#     maximum limit for the native heap growth. Please use -XX:HeapBaseMinAddress
+#     to set the Java Heap base and to place the Java Heap above 32GB virtual address.
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (allocation.cpp:389), pid=46548, tid=0x00000000000079c4
+#
+# JRE version: Java(TM) SE Runtime Environment (8.0_301-b09) (build 1.8.0_301-b09)
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (25.301-b09 mixed mode windows-amd64 compressed oops)
+# Failed to write core dump. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x000001b4d316b000):  JavaThread "C2 CompilerThread0" daemon [_thread_in_native, id=31172, stack(0x0000009ae3200000,0x0000009ae3300000)]
+
+Stack: [0x0000009ae3200000,0x0000009ae3300000]
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x32ed79]
+V  [jvm.dll+0x275722]
+V  [jvm.dll+0x2763cd]
+V  [jvm.dll+0x26ce05]
+V  [jvm.dll+0xd551c]
+V  [jvm.dll+0xd5d1c]
+V  [jvm.dll+0x470143]
+V  [jvm.dll+0x437c50]
+V  [jvm.dll+0x440c55]
+V  [jvm.dll+0x440015]
+V  [jvm.dll+0x42ae57]
+V  [jvm.dll+0xac1bb]
+V  [jvm.dll+0xaa81b]
+V  [jvm.dll+0x23ddc2]
+V  [jvm.dll+0x2923dc]
+C  [ucrtbase.dll+0x29333]
+C  [KERNEL32.DLL+0x1259d]
+C  [ntdll.dll+0x5af78]
+
+
+Current CompileTask:
+C2:  19461 5421       4       org.antlr.v4.runtime.atn.ParserATNSimulator::closure_ (311 bytes)
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x000001b4e13d7000 JavaThread "Flink-DispatcherRestEndpoint-thread-2" daemon [_thread_blocked, id=37212, stack(0x0000009afaf00000,0x0000009afb000000)]
+  0x000001b4e13d5800 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Writer (2/12)#0" daemon [_thread_blocked, id=48016, stack(0x0000009afcc00000,0x0000009afcd00000)]
+  0x000001b4e13dd800 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Writer (8/12)#0" daemon [_thread_blocked, id=28184, stack(0x0000009afcb00000,0x0000009afcc00000)]
+  0x000001b4e13dd000 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Writer (4/12)#0" daemon [_thread_blocked, id=44440, stack(0x0000009afca00000,0x0000009afcb00000)]
+  0x000001b4e13dc000 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Writer (7/12)#0" daemon [_thread_blocked, id=15784, stack(0x0000009afc900000,0x0000009afca00000)]
+  0x000001b4e13de800 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Writer (9/12)#0" daemon [_thread_blocked, id=27952, stack(0x0000009afc800000,0x0000009afc900000)]
+  0x000001b4e13d4000 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Writer (10/12)#0" daemon [_thread_blocked, id=15780, stack(0x0000009afc700000,0x0000009afc800000)]
+  0x000001b4e13d3000 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Writer (12/12)#0" daemon [_thread_blocked, id=9840, stack(0x0000009afc600000,0x0000009afc700000)]
+  0x000001b4e13d2800 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Writer (5/12)#0" daemon [_thread_blocked, id=42616, stack(0x0000009afc500000,0x0000009afc600000)]
+  0x000001b4e13d8800 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Writer (11/12)#0" daemon [_thread_blocked, id=43996, stack(0x0000009afc400000,0x0000009afc500000)]
+  0x000001b4e13d7800 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Writer (6/12)#0" daemon [_thread_blocked, id=23832, stack(0x0000009afc300000,0x0000009afc400000)]
+  0x000001b4e13d6000 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Writer (3/12)#0" daemon [_thread_blocked, id=47604, stack(0x0000009afb200000,0x0000009afb300000)]
+  0x000001b4e13db800 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Writer (1/12)#0" daemon [_thread_blocked, id=21296, stack(0x0000009afc200000,0x0000009afc300000)]
+  0x000001b4e13da800 JavaThread "Time Trigger for mysql_cdc_to_kafka_topic: Writer (8/12)#0" daemon [_thread_blocked, id=40744, stack(0x0000009afbe00000,0x0000009afbf00000)]
+  0x000001b4e13da000 JavaThread "Time Trigger for mysql_cdc_to_kafka_topic: Writer (3/12)#0" daemon [_thread_blocked, id=46704, stack(0x0000009afbc00000,0x0000009afbd00000)]
+  0x000001b4e13d4800 JavaThread "Time Trigger for mysql_cdc_to_kafka_topic: Writer (11/12)#0" daemon [_thread_blocked, id=27884, stack(0x0000009afb900000,0x0000009afba00000)]
+  0x000001b4e11a7800 JavaThread "Time Trigger for mysql_cdc_to_kafka_topic: Writer (2/12)#0" daemon [_thread_blocked, id=33576, stack(0x0000009afb600000,0x0000009afb700000)]
+  0x000001b4e11a5000 JavaThread "Time Trigger for mysql_cdc_to_kafka_topic: Writer (7/12)#0" daemon [_thread_blocked, id=38024, stack(0x0000009afb400000,0x0000009afb500000)]
+  0x000001b4e11a4800 JavaThread "Time Trigger for mysql_cdc_to_kafka_topic: Writer (12/12)#0" daemon [_thread_blocked, id=17568, stack(0x0000009afb300000,0x0000009afb400000)]
+  0x000001b4e119c000 JavaThread "Time Trigger for mysql_cdc_to_kafka_topic: Writer (6/12)#0" daemon [_thread_blocked, id=38536, stack(0x0000009afb000000,0x0000009afb100000)]
+  0x000001b4e11a2000 JavaThread "Time Trigger for mysql_cdc_to_kafka_topic: Writer (1/12)#0" daemon [_thread_blocked, id=16092, stack(0x0000009afab00000,0x0000009afac00000)]
+  0x000001b4e11a0000 JavaThread "Time Trigger for mysql_cdc_to_kafka_topic: Writer (10/12)#0" daemon [_thread_blocked, id=51704, stack(0x0000009afa900000,0x0000009afaa00000)]
+  0x000001b4e119a800 JavaThread "Time Trigger for mysql_cdc_to_kafka_topic: Writer (9/12)#0" daemon [_thread_blocked, id=23572, stack(0x0000009afa700000,0x0000009afa800000)]
+  0x000001b4e119f000 JavaThread "Time Trigger for mysql_cdc_to_kafka_topic: Writer (4/12)#0" daemon [_thread_blocked, id=5704, stack(0x0000009afa000000,0x0000009afa100000)]
+  0x000001b4e11a1800 JavaThread "Time Trigger for mysql_cdc_to_kafka_topic: Writer (5/12)#0" daemon [_thread_blocked, id=33496, stack(0x0000009af9d00000,0x0000009af9e00000)]
+  0x000001b4e119e800 JavaThread "kafka-producer-network-thread | producer-8" daemon [_thread_blocked, id=31336, stack(0x0000009af9a00000,0x0000009af9b00000)]
+  0x000001b4e119b000 JavaThread "kafka-producer-network-thread | producer-11" daemon [_thread_blocked, id=33804, stack(0x0000009af9900000,0x0000009af9a00000)]
+  0x000001b4e119d800 JavaThread "kafka-producer-network-thread | producer-4" daemon [_thread_in_vm, id=49000, stack(0x0000009af9700000,0x0000009af9800000)]
+  0x000001b4e11a0800 JavaThread "kafka-producer-network-thread | producer-6" daemon [_thread_blocked, id=40336, stack(0x0000009af9000000,0x0000009af9100000)]
+  0x000001b4e119d000 JavaThread "kafka-producer-network-thread | producer-10" daemon [_thread_in_native, id=34516, stack(0x0000009af8e00000,0x0000009af8f00000)]
+  0x000001b4e1199000 JavaThread "kafka-producer-network-thread | producer-3" daemon [_thread_blocked, id=47944, stack(0x0000009af8900000,0x0000009af8a00000)]
+  0x000001b4e1199800 JavaThread "kafka-producer-network-thread | producer-7" daemon [_thread_blocked, id=27052, stack(0x0000009af8300000,0x0000009af8400000)]
+  0x000001b4e1197800 JavaThread "kafka-producer-network-thread | producer-2" daemon [_thread_in_native, id=23780, stack(0x0000009af8100000,0x0000009af8200000)]
+  0x000001b4e1198000 JavaThread "kafka-producer-network-thread | producer-5" daemon [_thread_blocked, id=12636, stack(0x0000009af7d00000,0x0000009af7e00000)]
+  0x000001b4e1196800 JavaThread "kafka-producer-network-thread | producer-12" daemon [_thread_blocked, id=36432, stack(0x0000009af6c00000,0x0000009af6d00000)]
+  0x000001b4e1196000 JavaThread "kafka-producer-network-thread | producer-9" daemon [_thread_blocked, id=34140, stack(0x0000009af6500000,0x0000009af6600000)]
+  0x000001b4e1195000 JavaThread "kafka-producer-network-thread | producer-1" daemon [_thread_blocked, id=27236, stack(0x0000009af6400000,0x0000009af6500000)]
+  0x000001b4e118d800 JavaThread "System Time Trigger for Source: mysql_cdc_dim_source (3/12)#0" daemon [_thread_blocked, id=49860, stack(0x0000009af6300000,0x0000009af6400000)]
+  0x000001b4e1194800 JavaThread "System Time Trigger for Source: mysql_cdc_dim_source (5/12)#0" daemon [_thread_blocked, id=21756, stack(0x0000009af6200000,0x0000009af6300000)]
+  0x000001b4e1193000 JavaThread "System Time Trigger for Source: mysql_cdc_dim_source (12/12)#0" daemon [_thread_blocked, id=33536, stack(0x0000009af6100000,0x0000009af6200000)]
+  0x000001b4e1192000 JavaThread "System Time Trigger for Source: mysql_cdc_dim_source (1/12)#0" daemon [_thread_blocked, id=40616, stack(0x0000009af6000000,0x0000009af6100000)]
+  0x000001b4e1193800 JavaThread "System Time Trigger for Source: mysql_cdc_dim_source (9/12)#0" daemon [_thread_blocked, id=15612, stack(0x0000009af5f00000,0x0000009af6000000)]
+  0x000001b4e1191800 JavaThread "System Time Trigger for Source: mysql_cdc_dim_source (6/12)#0" daemon [_thread_blocked, id=38868, stack(0x0000009af5e00000,0x0000009af5f00000)]
+  0x000001b4e1190000 JavaThread "System Time Trigger for Source: mysql_cdc_main_source (5/12)#0" daemon [_thread_blocked, id=30464, stack(0x0000009af5d00000,0x0000009af5e00000)]
+  0x000001b4e1190800 JavaThread "System Time Trigger for Source: mysql_cdc_main_source (3/12)#0" daemon [_thread_blocked, id=21196, stack(0x0000009af5c00000,0x0000009af5d00000)]
+  0x000001b4e1188800 JavaThread "System Time Trigger for Source: mysql_cdc_main_source (11/12)#0" daemon [_thread_blocked, id=9368, stack(0x0000009af5b00000,0x0000009af5c00000)]
+  0x000001b4e118e800 JavaThread "System Time Trigger for Source: mysql_cdc_dim_source (7/12)#0" daemon [_thread_blocked, id=10324, stack(0x0000009af5a00000,0x0000009af5b00000)]
+  0x000001b4e118b800 JavaThread "System Time Trigger for Source: mysql_cdc_dim_source (8/12)#0" daemon [_thread_blocked, id=8960, stack(0x0000009af5900000,0x0000009af5a00000)]
+  0x000001b4e118a000 JavaThread "System Time Trigger for Source: mysql_cdc_main_source (2/12)#0" daemon [_thread_blocked, id=31384, stack(0x0000009af5700000,0x0000009af5800000)]
+  0x000001b4e118a800 JavaThread "System Time Trigger for Source: mysql_cdc_main_source (7/12)#0" daemon [_thread_blocked, id=24292, stack(0x0000009af5600000,0x0000009af5700000)]
+  0x000001b4e118c000 JavaThread "System Time Trigger for Source: mysql_cdc_dim_source (11/12)#0" daemon [_thread_blocked, id=37548, stack(0x0000009af5300000,0x0000009af5400000)]
+  0x000001b4e118f000 JavaThread "System Time Trigger for Source: mysql_cdc_main_source (1/12)#0" daemon [_thread_blocked, id=48684, stack(0x0000009af5200000,0x0000009af5300000)]
+  0x000001b4e1189000 JavaThread "System Time Trigger for Source: mysql_cdc_dim_source (2/12)#0" daemon [_thread_blocked, id=10376, stack(0x0000009af5100000,0x0000009af5200000)]
+  0x000001b4e118d000 JavaThread "System Time Trigger for Source: mysql_cdc_main_source (9/12)#0" daemon [_thread_blocked, id=24460, stack(0x0000009af4f00000,0x0000009af5000000)]
+  0x000001b4e1181000 JavaThread "System Time Trigger for Source: mysql_cdc_main_source (12/12)#0" daemon [_thread_blocked, id=49004, stack(0x0000009af4b00000,0x0000009af4c00000)]
+  0x000001b4e1187800 JavaThread "System Time Trigger for Source: mysql_cdc_main_source (6/12)#0" daemon [_thread_blocked, id=34232, stack(0x0000009af4a00000,0x0000009af4b00000)]
+  0x000001b4e1187000 JavaThread "System Time Trigger for Source: mysql_cdc_main_source (4/12)#0" daemon [_thread_blocked, id=54964, stack(0x0000009af4900000,0x0000009af4a00000)]
+  0x000001b4e1184800 JavaThread "System Time Trigger for Source: mysql_cdc_dim_source (10/12)#0" daemon [_thread_blocked, id=11068, stack(0x0000009af4800000,0x0000009af4900000)]
+  0x000001b4e1186000 JavaThread "System Time Trigger for Source: mysql_cdc_main_source (10/12)#0" daemon [_thread_blocked, id=37188, stack(0x0000009af4200000,0x0000009af4300000)]
+  0x000001b4e117d000 JavaThread "System Time Trigger for Source: mysql_cdc_dim_source (4/12)#0" daemon [_thread_blocked, id=38796, stack(0x0000009af4100000,0x0000009af4200000)]
+  0x000001b4e1175000 JavaThread "System Time Trigger for Source: mysql_cdc_main_source (8/12)#0" daemon [_thread_blocked, id=14316, stack(0x0000009af4000000,0x0000009af4100000)]
+  0x000001b4e117e800 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Committer (11/12)#0" daemon [_thread_blocked, id=45020, stack(0x0000009af3d00000,0x0000009af3e00000)]
+  0x000001b4e117f800 JavaThread "System Time Trigger for Map (1/12)#0" daemon [_thread_blocked, id=30224, stack(0x0000009af5000000,0x0000009af5100000)]
+  0x000001b4e1181800 JavaThread "System Time Trigger for Sink: Print to Std. Out (10/12)#0" daemon [_thread_blocked, id=46124, stack(0x0000009af4e00000,0x0000009af4f00000)]
+  0x000001b4e1184000 JavaThread "Time Trigger for Source: mysql_cdc_main_source (11/12)#0" daemon [_thread_blocked, id=25920, stack(0x0000009af4d00000,0x0000009af4e00000)]
+  0x000001b4e116b800 JavaThread "Time Trigger for Source: mysql_cdc_dim_source (12/12)#0" daemon [_thread_blocked, id=54144, stack(0x0000009af4600000,0x0000009af4700000)]
+  0x000001b4e116a000 JavaThread "Time Trigger for Source: mysql_cdc_main_source (10/12)#0" daemon [_thread_blocked, id=39976, stack(0x0000009af4500000,0x0000009af4600000)]
+  0x000001b4e116f800 JavaThread "System Time Trigger for clean_json_column_map (6/12)#0" daemon [_thread_blocked, id=55084, stack(0x0000009af3e00000,0x0000009af3f00000)]
+  0x000001b4e1183000 JavaThread "System Time Trigger for Sink: Print to Std. Out (1/12)#0" daemon [_thread_blocked, id=52844, stack(0x0000009af4700000,0x0000009af4800000)]
+  0x000001b4e1180000 JavaThread "Time Trigger for Source: mysql_cdc_main_source (6/12)#0" daemon [_thread_blocked, id=53716, stack(0x0000009af3f00000,0x0000009af4000000)]
+  0x000001b4e1185800 JavaThread "Time Trigger for Source: mysql_cdc_main_source (4/12)#0" daemon [_thread_blocked, id=39220, stack(0x0000009afae00000,0x0000009afaf00000)]
+  0x000001b4e1182800 JavaThread "System Time Trigger for Sink: Print to Std. Out (6/12)#0" daemon [_thread_blocked, id=10400, stack(0x0000009afad00000,0x0000009afae00000)]
+  0x000001b4e1178000 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Committer (2/12)#0" daemon [_thread_blocked, id=29328, stack(0x0000009afac00000,0x0000009afad00000)]
+  0x000001b4e117e000 JavaThread "Time Trigger for Source: mysql_cdc_dim_source (1/12)#0" daemon [_thread_blocked, id=31244, stack(0x0000009afaa00000,0x0000009afab00000)]
+  0x000001b4e1175800 JavaThread "System Time Trigger for clean_json_column_map (7/12)#0" daemon [_thread_blocked, id=37072, stack(0x0000009afa800000,0x0000009afa900000)]
+  0x000001b4e1177000 JavaThread "System Time Trigger for Map (11/12)#0" daemon [_thread_blocked, id=4196, stack(0x0000009afa500000,0x0000009afa600000)]
+  0x000001b4e1176800 JavaThread "System Time Trigger for clean_json_column_map (11/12)#0" daemon [_thread_blocked, id=6388, stack(0x0000009af8700000,0x0000009af8800000)]
+  0x000001b4e117c800 JavaThread "System Time Trigger for clean_json_column_map (1/12)#0" daemon [_thread_blocked, id=4064, stack(0x0000009af8500000,0x0000009af8600000)]
+  0x000001b4e117b800 JavaThread "System Time Trigger for clean_json_column_map (5/12)#0" daemon [_thread_blocked, id=49076, stack(0x0000009af7900000,0x0000009af7a00000)]
+  0x000001b4e117b000 JavaThread "System Time Trigger for Map (12/12)#0" daemon [_thread_blocked, id=24512, stack(0x0000009af7000000,0x0000009af7100000)]
+  0x000001b4e1179800 JavaThread "Time Trigger for Source: mysql_cdc_dim_source (4/12)#0" daemon [_thread_blocked, id=33528, stack(0x0000009af6f00000,0x0000009af7000000)]
+  0x000001b4e1178800 JavaThread "Time Trigger for Source: mysql_cdc_dim_source (3/12)#0" daemon [_thread_blocked, id=18128, stack(0x0000009af5800000,0x0000009af5900000)]
+  0x000001b4e117a000 JavaThread "System Time Trigger for clean_json_column_map (8/12)#0" daemon [_thread_blocked, id=11708, stack(0x0000009af5500000,0x0000009af5600000)]
+  0x000001b4e1174000 JavaThread "Time Trigger for Source: mysql_cdc_dim_source (5/12)#0" daemon [_thread_blocked, id=15732, stack(0x0000009af5400000,0x0000009af5500000)]
+  0x000001b4e1171000 JavaThread "Time Trigger for Source: mysql_cdc_main_source (5/12)#0" daemon [_thread_blocked, id=18728, stack(0x0000009af4c00000,0x0000009af4d00000)]
+  0x000001b4e116c800 JavaThread "Time Trigger for Source: mysql_cdc_dim_source (7/12)#0" daemon [_thread_blocked, id=32144, stack(0x0000009af4400000,0x0000009af4500000)]
+  0x000001b4e1173800 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Committer (6/12)#0" daemon [_thread_blocked, id=31456, stack(0x0000009af4300000,0x0000009af4400000)]
+  0x000001b4e1172800 JavaThread "Time Trigger for Source: mysql_cdc_dim_source (6/12)#0" daemon [_thread_blocked, id=51764, stack(0x0000009af3c00000,0x0000009af3d00000)]
+  0x000001b4e116f000 JavaThread "Time Trigger for Source: mysql_cdc_dim_source (8/12)#0" daemon [_thread_blocked, id=46400, stack(0x0000009afa600000,0x0000009afa700000)]
+  0x000001b4e116b000 JavaThread "Time Trigger for Source: mysql_cdc_dim_source (9/12)#0" daemon [_thread_blocked, id=51788, stack(0x0000009afa400000,0x0000009afa500000)]
+  0x000001b4e116d800 JavaThread "System Time Trigger for Map (4/12)#0" daemon [_thread_blocked, id=51772, stack(0x0000009afa300000,0x0000009afa400000)]
+  0x000001b4e1170800 JavaThread "System Time Trigger for clean_json_column_map (12/12)#0" daemon [_thread_blocked, id=51776, stack(0x0000009afa200000,0x0000009afa300000)]
+  0x000001b4e1172000 JavaThread "System Time Trigger for clean_json_column_map (4/12)#0" daemon [_thread_blocked, id=51752, stack(0x0000009afa100000,0x0000009afa200000)]
+  0x000001b4e116e000 JavaThread "Time Trigger for Source: mysql_cdc_main_source (3/12)#0" daemon [_thread_blocked, id=20292, stack(0x0000009af9f00000,0x0000009afa000000)]
+  0x000001b4ddadf000 JavaThread "System Time Trigger for Sink: Print to Std. Out (11/12)#0" daemon [_thread_blocked, id=2160, stack(0x0000009af9e00000,0x0000009af9f00000)]
+  0x000001b4ddade800 JavaThread "Time Trigger for Source: mysql_cdc_dim_source (11/12)#0" daemon [_thread_blocked, id=52944, stack(0x0000009af9c00000,0x0000009af9d00000)]
+  0x000001b4ddadd800 JavaThread "Time Trigger for Source: mysql_cdc_main_source (2/12)#0" daemon [_thread_blocked, id=30476, stack(0x0000009af9b00000,0x0000009af9c00000)]
+  0x000001b4ddadd000 JavaThread "System Time Trigger for Sink: Print to Std. Out (12/12)#0" daemon [_thread_blocked, id=32424, stack(0x0000009af9800000,0x0000009af9900000)]
+  0x000001b4ddada000 JavaThread "Time Trigger for Source: mysql_cdc_main_source (7/12)#0" daemon [_thread_blocked, id=35180, stack(0x0000009af9600000,0x0000009af9700000)]
+  0x000001b4ddadc000 JavaThread "System Time Trigger for Sink: Print to Std. Out (9/12)#0" daemon [_thread_blocked, id=41632, stack(0x0000009af9500000,0x0000009af9600000)]
+  0x000001b4ddada800 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Committer (5/12)#0" daemon [_thread_blocked, id=44212, stack(0x0000009af9400000,0x0000009af9500000)]
+  0x000001b4ddad9000 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Committer (12/12)#0" daemon [_thread_blocked, id=15116, stack(0x0000009af9300000,0x0000009af9400000)]
+  0x000001b4ddadb800 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Committer (3/12)#0" daemon [_thread_blocked, id=34564, stack(0x0000009af9200000,0x0000009af9300000)]
+  0x000001b4ddad4800 JavaThread "System Time Trigger for Map (7/12)#0" daemon [_thread_blocked, id=13348, stack(0x0000009af9100000,0x0000009af9200000)]
+  0x000001b4ddad7000 JavaThread "Time Trigger for Source: mysql_cdc_main_source (9/12)#0" daemon [_thread_blocked, id=55268, stack(0x0000009af8f00000,0x0000009af9000000)]
+  0x000001b4ddace000 JavaThread "Time Trigger for Source: mysql_cdc_main_source (8/12)#0" daemon [_thread_blocked, id=11272, stack(0x0000009af8d00000,0x0000009af8e00000)]
+  0x000001b4ddace800 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Committer (1/12)#0" daemon [_thread_blocked, id=42076, stack(0x0000009af8c00000,0x0000009af8d00000)]
+  0x000001b4ddad1800 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Committer (4/12)#0" daemon [_thread_blocked, id=27740, stack(0x0000009af8b00000,0x0000009af8c00000)]
+  0x000001b4ddad1000 JavaThread "Time Trigger for Source: mysql_cdc_main_source (1/12)#0" daemon [_thread_blocked, id=30664, stack(0x0000009af8a00000,0x0000009af8b00000)]
+  0x000001b4ddad0000 JavaThread "Time Trigger for Source: mysql_cdc_dim_source (2/12)#0" daemon [_thread_blocked, id=36092, stack(0x0000009af8800000,0x0000009af8900000)]
+  0x000001b4ddad3000 JavaThread "Time Trigger for Source: mysql_cdc_main_source (12/12)#0" daemon [_thread_blocked, id=45488, stack(0x0000009af8600000,0x0000009af8700000)]
+  0x000001b4ddacf800 JavaThread "Time Trigger for Source: mysql_cdc_dim_source (10/12)#0" daemon [_thread_blocked, id=17724, stack(0x0000009af8400000,0x0000009af8500000)]
+  0x000001b4ddacb000 JavaThread "System Time Trigger for Sink: Print to Std. Out (4/12)#0" daemon [_thread_blocked, id=35400, stack(0x0000009af8200000,0x0000009af8300000)]
+  0x000001b4ddac3800 JavaThread "System Time Trigger for Sink: Print to Std. Out (7/12)#0" daemon [_thread_blocked, id=40536, stack(0x0000009af8000000,0x0000009af8100000)]
+  0x000001b4ddaca000 JavaThread "System Time Trigger for dim_data_convert_json (1/1)#0" daemon [_thread_blocked, id=25824, stack(0x0000009af7f00000,0x0000009af8000000)]
+  0x000001b4ddac9800 JavaThread "System Time Trigger for Sink: Print to Std. Out (8/12)#0" daemon [_thread_blocked, id=28276, stack(0x0000009af7e00000,0x0000009af7f00000)]
+  0x000001b4ddac8000 JavaThread "System Time Trigger for Map (6/12)#0" daemon [_thread_blocked, id=49832, stack(0x0000009af7c00000,0x0000009af7d00000)]
+  0x000001b4ddac0000 JavaThread "System Time Trigger for clean_json_column_map (3/12)#0" daemon [_thread_blocked, id=25472, stack(0x0000009af7b00000,0x0000009af7c00000)]
+  0x000001b4ddac2800 JavaThread "System Time Trigger for Sink: Print to Std. Out (2/12)#0" daemon [_thread_blocked, id=38272, stack(0x0000009af7a00000,0x0000009af7b00000)]
+  0x000001b4ddac2000 JavaThread "System Time Trigger for Map (10/12)#0" daemon [_thread_blocked, id=3372, stack(0x0000009af7800000,0x0000009af7900000)]
+  0x000001b4ddac6800 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Committer (8/12)#0" daemon [_thread_blocked, id=33464, stack(0x0000009af7700000,0x0000009af7800000)]
+  0x000001b4ddac1000 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Committer (10/12)#0" daemon [_thread_blocked, id=27020, stack(0x0000009af7600000,0x0000009af7700000)]
+  0x000001b4ddac5800 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Committer (9/12)#0" daemon [_thread_blocked, id=50604, stack(0x0000009af7500000,0x0000009af7600000)]
+  0x000001b4e13f0800 JavaThread "System Time Trigger for Sink: Print to Std. Out (5/12)#0" daemon [_thread_blocked, id=30276, stack(0x0000009af7400000,0x0000009af7500000)]
+  0x000001b4e13ef800 JavaThread "System Time Trigger for Map (8/12)#0" daemon [_thread_blocked, id=13900, stack(0x0000009af7300000,0x0000009af7400000)]
+  0x000001b4e13ef000 JavaThread "System Time Trigger for db_data_convert_json (1/1)#0" daemon [_thread_blocked, id=28764, stack(0x0000009af7200000,0x0000009af7300000)]
+  0x000001b4e13f1000 JavaThread "System Time Trigger for Map (2/12)#0" daemon [_thread_blocked, id=36832, stack(0x0000009af7100000,0x0000009af7200000)]
+  0x000001b4e13e6800 JavaThread "System Time Trigger for clean_json_column_map (10/12)#0" daemon [_thread_blocked, id=6496, stack(0x0000009af6e00000,0x0000009af6f00000)]
+  0x000001b4e13ea800 JavaThread "System Time Trigger for clean_json_column_map (9/12)#0" daemon [_thread_blocked, id=38556, stack(0x0000009af6d00000,0x0000009af6e00000)]
+  0x000001b4e13e9800 JavaThread "System Time Trigger for Map (3/12)#0" daemon [_thread_blocked, id=50448, stack(0x0000009af6b00000,0x0000009af6c00000)]
+  0x000001b4e13ed800 JavaThread "System Time Trigger for Map (9/12)#0" daemon [_thread_blocked, id=45740, stack(0x0000009af6a00000,0x0000009af6b00000)]
+  0x000001b4e13ec800 JavaThread "System Time Trigger for Map (5/12)#0" daemon [_thread_blocked, id=43544, stack(0x0000009af6900000,0x0000009af6a00000)]
+  0x000001b4e13eb000 JavaThread "System Time Trigger for mysql_cdc_to_kafka_topic: Committer (7/12)#0" daemon [_thread_blocked, id=3512, stack(0x0000009af6800000,0x0000009af6900000)]
+  0x000001b4e13ec000 JavaThread "System Time Trigger for Sink: Print to Std. Out (3/12)#0" daemon [_thread_blocked, id=28992, stack(0x0000009af6700000,0x0000009af6800000)]
+  0x000001b4e13e8000 JavaThread "System Time Trigger for clean_json_column_map (2/12)#0" daemon [_thread_blocked, id=55040, stack(0x0000009af6600000,0x0000009af6700000)]
+  0x000001b4dd363000 JavaThread "Co-Process-Broadcast (12/12)#0" [_thread_blocked, id=48940, stack(0x0000009af3b00000,0x0000009af3c00000)]
+  0x000001b4dd362800 JavaThread "Co-Process-Broadcast (11/12)#0" [_thread_blocked, id=48788, stack(0x0000009af3a00000,0x0000009af3b00000)]
+  0x000001b4dd364000 JavaThread "Co-Process-Broadcast (10/12)#0" [_thread_blocked, id=53280, stack(0x0000009af3900000,0x0000009af3a00000)]
+  0x000001b4dd361800 JavaThread "Co-Process-Broadcast (9/12)#0" [_thread_blocked, id=47332, stack(0x0000009af3800000,0x0000009af3900000)]
+  0x000001b4dd361000 JavaThread "Co-Process-Broadcast (8/12)#0" [_thread_blocked, id=16492, stack(0x0000009af3700000,0x0000009af3800000)]
+  0x000001b4dd35e800 JavaThread "OutputFlusher for map_create_hbase_dim_table (8/12)#0" daemon [_thread_blocked, id=45316, stack(0x0000009af3600000,0x0000009af3700000)]
+  0x000001b4dd364800 JavaThread "Co-Process-Broadcast (7/12)#0" [_thread_blocked, id=28796, stack(0x0000009af3500000,0x0000009af3600000)]
+  0x000001b4dd365800 JavaThread "Co-Process-Broadcast (6/12)#0" [_thread_blocked, id=43484, stack(0x0000009af3400000,0x0000009af3500000)]
+  0x000001b4dd360000 JavaThread "Co-Process-Broadcast (5/12)#0" [_thread_blocked, id=36520, stack(0x0000009af3300000,0x0000009af3400000)]
+  0x000001b4dd357000 JavaThread "OutputFlusher for map_create_hbase_dim_table (10/12)#0" daemon [_thread_blocked, id=48988, stack(0x0000009af3200000,0x0000009af3300000)]
+  0x000001b4dd35e000 JavaThread "OutputFlusher for map_create_hbase_dim_table (7/12)#0" daemon [_thread_blocked, id=26400, stack(0x0000009af3100000,0x0000009af3200000)]
+  0x000001b4dd35d000 JavaThread "Co-Process-Broadcast (4/12)#0" [_thread_blocked, id=49364, stack(0x0000009af3000000,0x0000009af3100000)]
+  0x000001b4dd35c800 JavaThread "Co-Process-Broadcast (3/12)#0" [_thread_blocked, id=37940, stack(0x0000009af2f00000,0x0000009af3000000)]
+  0x000001b4dd35b800 JavaThread "OutputFlusher for map_create_hbase_dim_table (6/12)#0" daemon [_thread_blocked, id=21640, stack(0x0000009af2e00000,0x0000009af2f00000)]
+  0x000001b4dd359800 JavaThread "OutputFlusher for map_create_hbase_dim_table (11/12)#0" daemon [_thread_blocked, id=17532, stack(0x0000009af2d00000,0x0000009af2e00000)]
+  0x000001b4dd35b000 JavaThread "Co-Process-Broadcast (2/12)#0" [_thread_blocked, id=36752, stack(0x0000009af2c00000,0x0000009af2d00000)]
+  0x000001b4dd358800 JavaThread "OutputFlusher for map_create_hbase_dim_table (12/12)#0" daemon [_thread_blocked, id=47580, stack(0x0000009af2b00000,0x0000009af2c00000)]
+  0x000001b4dd35a000 JavaThread "Co-Process-Broadcast (1/12)#0" [_thread_blocked, id=13092, stack(0x0000009af2a00000,0x0000009af2b00000)]
+  0x000001b4dd351000 JavaThread "map_create_hbase_dim_table (12/12)#0" [_thread_blocked, id=15792, stack(0x0000009af2900000,0x0000009af2a00000)]
+  0x000001b4dd355000 JavaThread "OutputFlusher for map_create_hbase_dim_table (9/12)#0" daemon [_thread_blocked, id=54820, stack(0x0000009af2800000,0x0000009af2900000)]
+  0x000001b4dd352000 JavaThread "map_create_hbase_dim_table (11/12)#0" [_thread_in_native, id=38228, stack(0x0000009af2700000,0x0000009af2800000)]
+  0x000001b4dd353800 JavaThread "map_create_hbase_dim_table (10/12)#0" [_thread_blocked, id=32196, stack(0x0000009af2600000,0x0000009af2700000)]
+  0x000001b4dd354000 JavaThread "map_create_hbase_dim_table (9/12)#0" [_thread_blocked, id=17332, stack(0x0000009af2500000,0x0000009af2600000)]
+  0x000001b4dd356800 JavaThread "map_create_hbase_dim_table (8/12)#0" [_thread_blocked, id=30056, stack(0x0000009af2400000,0x0000009af2500000)]
+  0x000001b4dd358000 JavaThread "map_create_hbase_dim_table (7/12)#0" [_thread_blocked, id=4164, stack(0x0000009af2300000,0x0000009af2400000)]
+  0x000001b4dd355800 JavaThread "map_create_hbase_dim_table (6/12)#0" [_thread_blocked, id=37344, stack(0x0000009af2200000,0x0000009af2300000)]
+  0x000001b4dd352800 JavaThread "OutputFlusher for map_create_hbase_dim_table (4/12)#0" daemon [_thread_blocked, id=19900, stack(0x0000009af2100000,0x0000009af2200000)]
+  0x000001b4dbc96000 JavaThread "OutputFlusher for map_create_hbase_dim_table (5/12)#0" daemon [_thread_blocked, id=6664, stack(0x0000009af2000000,0x0000009af2100000)]
+  0x000001b4dbc95000 JavaThread "OutputFlusher for map_create_hbase_dim_table (2/12)#0" daemon [_thread_blocked, id=19872, stack(0x0000009af1d00000,0x0000009af1e00000)]
+  0x000001b4dbc94800 JavaThread "OutputFlusher for map_create_hbase_dim_table (1/12)#0" daemon [_thread_blocked, id=38352, stack(0x0000009af1c00000,0x0000009af1d00000)]
+  0x000001b4dbc93800 JavaThread "map_create_hbase_dim_table (5/12)#0" [_thread_blocked, id=33980, stack(0x0000009af1b00000,0x0000009af1c00000)]
+  0x000001b4dbc93000 JavaThread "OutputFlusher for map_create_hbase_dim_table (3/12)#0" daemon [_thread_blocked, id=40628, stack(0x0000009af1a00000,0x0000009af1b00000)]
+  0x000001b4dbc92000 JavaThread "map_create_hbase_dim_table (4/12)#0" [_thread_blocked, id=48588, stack(0x0000009af1900000,0x0000009af1a00000)]
+  0x000001b4dbc8a800 JavaThread "map_create_hbase_dim_table (3/12)#0" [_thread_blocked, id=17004, stack(0x0000009af1800000,0x0000009af1900000)]
+  0x000001b4dbc91800 JavaThread "map_create_hbase_dim_table (2/12)#0" [_thread_blocked, id=22880, stack(0x0000009af1700000,0x0000009af1800000)]
+  0x000001b4dbc90800 JavaThread "map_create_hbase_dim_table (1/12)#0" [_thread_blocked, id=10712, stack(0x0000009af1600000,0x0000009af1700000)]
+  0x000001b4dbc90000 JavaThread "OutputFlusher for clean_json_column_map (11/12)#0" daemon [_thread_blocked, id=18032, stack(0x0000009af1500000,0x0000009af1600000)]
+  0x000001b4dbc89000 JavaThread "OutputFlusher for clean_json_column_map (7/12)#0" daemon [_thread_blocked, id=6916, stack(0x0000009af1400000,0x0000009af1500000)]
+  0x000001b4dbc8a000 JavaThread "OutputFlusher for clean_json_column_map (1/12)#0" daemon [_thread_blocked, id=19108, stack(0x0000009af1300000,0x0000009af1400000)]
+  0x000001b4dbc8d800 JavaThread "OutputFlusher for dim_data_convert_json (1/1)#0" daemon [_thread_blocked, id=31692, stack(0x0000009af1200000,0x0000009af1300000)]
+  0x000001b4dbc8d000 JavaThread "OutputFlusher for clean_json_column_map (6/12)#0" daemon [_thread_blocked, id=38252, stack(0x0000009af1100000,0x0000009af1200000)]
+  0x000001b4dbc8c000 JavaThread "OutputFlusher for clean_json_column_map (2/12)#0" daemon [_thread_blocked, id=42152, stack(0x0000009af1000000,0x0000009af1100000)]
+  0x000001b4dbc8f000 JavaThread "OutputFlusher for clean_json_column_map (9/12)#0" daemon [_thread_blocked, id=43808, stack(0x0000009af0f00000,0x0000009af1000000)]
+  0x000001b4dbc8b800 JavaThread "OutputFlusher for clean_json_column_map (12/12)#0" daemon [_thread_blocked, id=23988, stack(0x0000009af0e00000,0x0000009af0f00000)]
+  0x000001b4dbc8e800 JavaThread "OutputFlusher for clean_json_column_map (8/12)#0" daemon [_thread_blocked, id=30440, stack(0x0000009af0d00000,0x0000009af0e00000)]
+  0x000001b4dbc88800 JavaThread "OutputFlusher for clean_json_column_map (5/12)#0" daemon [_thread_blocked, id=23076, stack(0x0000009af0c00000,0x0000009af0d00000)]
+  0x000001b4dbc81000 JavaThread "OutputFlusher for clean_json_column_map (10/12)#0" daemon [_thread_blocked, id=20840, stack(0x0000009af0b00000,0x0000009af0c00000)]
+  0x000001b4dbc87800 JavaThread "OutputFlusher for clean_json_column_map (4/12)#0" daemon [_thread_blocked, id=9664, stack(0x0000009af0a00000,0x0000009af0b00000)]
+  0x000001b4dbc87000 JavaThread "OutputFlusher for clean_json_column_map (3/12)#0" daemon [_thread_blocked, id=35680, stack(0x0000009af0900000,0x0000009af0a00000)]
+  0x000001b4dbc82800 JavaThread "clean_json_column_map (11/12)#0" [_thread_blocked, id=24604, stack(0x0000009af0800000,0x0000009af0900000)]
+  0x000001b4dbc80000 JavaThread "clean_json_column_map (12/12)#0" [_thread_blocked, id=32552, stack(0x0000009af0700000,0x0000009af0800000)]
+  0x000001b4dbc85800 JavaThread "clean_json_column_map (9/12)#0" [_thread_blocked, id=37704, stack(0x0000009af0600000,0x0000009af0700000)]
+  0x000001b4dbc84000 JavaThread "clean_json_column_map (10/12)#0" [_thread_blocked, id=22416, stack(0x0000009af0500000,0x0000009af0600000)]
+  0x000001b4dbc86000 JavaThread "clean_json_column_map (8/12)#0" [_thread_blocked, id=6724, stack(0x0000009af0400000,0x0000009af0500000)]
+  0x000001b4dbc7f800 JavaThread "clean_json_column_map (7/12)#0" [_thread_blocked, id=17628, stack(0x0000009af0300000,0x0000009af0400000)]
+  0x000001b4dbc83000 JavaThread "clean_json_column_map (6/12)#0" [_thread_blocked, id=54380, stack(0x0000009af0200000,0x0000009af0300000)]
+  0x000001b4dbc84800 JavaThread "clean_json_column_map (5/12)#0" [_thread_blocked, id=2864, stack(0x0000009af0100000,0x0000009af0200000)]
+  0x000001b4dbc81800 JavaThread "clean_json_column_map (4/12)#0" [_thread_blocked, id=38512, stack(0x0000009af0000000,0x0000009af0100000)]
+  0x000001b4dbc7e800 JavaThread "clean_json_column_map (3/12)#0" [_thread_blocked, id=45628, stack(0x0000009aeff00000,0x0000009af0000000)]
+  0x000001b4dbc77000 JavaThread "clean_json_column_map (2/12)#0" [_thread_blocked, id=43600, stack(0x0000009aefe00000,0x0000009aeff00000)]
+  0x000001b4dbc7b800 JavaThread "clean_json_column_map (1/12)#0" [_thread_blocked, id=13768, stack(0x0000009aefd00000,0x0000009aefe00000)]
+  0x000001b4dbc7a000 JavaThread "dim_data_convert_json (1/1)#0" [_thread_blocked, id=24076, stack(0x0000009aefc00000,0x0000009aefd00000)]
+  0x000001b4dbc78800 JavaThread "Sink: Print to Std. Out (12/12)#0" [_thread_blocked, id=27288, stack(0x0000009aefb00000,0x0000009aefc00000)]
+  0x000001b4dbc78000 JavaThread "Sink: Print to Std. Out (11/12)#0" [_thread_blocked, id=3904, stack(0x0000009aefa00000,0x0000009aefb00000)]
+  0x000001b4dbc79800 JavaThread "Sink: Print to Std. Out (10/12)#0" [_thread_blocked, id=24044, stack(0x0000009aef900000,0x0000009aefa00000)]
+  0x000001b4dbc7e000 JavaThread "Sink: Print to Std. Out (9/12)#0" [_thread_blocked, id=23616, stack(0x0000009aef800000,0x0000009aef900000)]
+  0x000001b4dbc7b000 JavaThread "Sink: Print to Std. Out (8/12)#0" [_thread_blocked, id=12788, stack(0x0000009aef700000,0x0000009aef800000)]
+  0x000001b4dbc7d000 JavaThread "Sink: Print to Std. Out (7/12)#0" [_thread_blocked, id=41800, stack(0x0000009aef600000,0x0000009aef700000)]
+  0x000001b4dbc7c800 JavaThread "Sink: Print to Std. Out (6/12)#0" [_thread_blocked, id=17588, stack(0x0000009aef500000,0x0000009aef600000)]
+  0x000001b4dd9ca000 JavaThread "Sink: Print to Std. Out (3/12)#0" [_thread_blocked, id=43524, stack(0x0000009aef400000,0x0000009aef500000)]
+  0x000001b4dd9c8000 JavaThread "Sink: Print to Std. Out (5/12)#0" [_thread_blocked, id=44620, stack(0x0000009aef300000,0x0000009aef400000)]
+  0x000001b4dd9c5800 JavaThread "Sink: Print to Std. Out (4/12)#0" [_thread_blocked, id=38368, stack(0x0000009aef200000,0x0000009aef300000)]
+  0x000001b4dd9c9800 JavaThread "Sink: Print to Std. Out (1/12)#0" [_thread_blocked, id=12580, stack(0x0000009aef100000,0x0000009aef200000)]
+  0x000001b4dd9c6800 JavaThread "Sink: Print to Std. Out (2/12)#0" [_thread_blocked, id=43428, stack(0x0000009aef000000,0x0000009aef100000)]
+  0x000001b4dd9c8800 JavaThread "OutputFlusher for mysql_cdc_to_kafka_topic: Writer (12/12)#0" daemon [_thread_blocked, id=55116, stack(0x0000009aeef00000,0x0000009aef000000)]
+  0x000001b4dd9c5000 JavaThread "mysql_cdc_to_kafka_topic: Committer (12/12)#0" [_thread_blocked, id=17112, stack(0x0000009aeee00000,0x0000009aeef00000)]
+  0x000001b4dd9c7000 JavaThread "mysql_cdc_to_kafka_topic: Committer (11/12)#0" [_thread_blocked, id=8800, stack(0x0000009aeed00000,0x0000009aeee00000)]
+  0x000001b4dd9cb000 JavaThread "mysql_cdc_to_kafka_topic: Committer (10/12)#0" [_thread_blocked, id=21632, stack(0x0000009aeec00000,0x0000009aeed00000)]
+  0x000001b4dd9cb800 JavaThread "mysql_cdc_to_kafka_topic: Committer (9/12)#0" [_thread_blocked, id=3008, stack(0x0000009aeeb00000,0x0000009aeec00000)]
+  0x000001b4dd9bd800 JavaThread "mysql_cdc_to_kafka_topic: Committer (8/12)#0" [_thread_blocked, id=2228, stack(0x0000009aeea00000,0x0000009aeeb00000)]
+  0x000001b4dd9bf800 JavaThread "mysql_cdc_to_kafka_topic: Committer (7/12)#0" [_thread_blocked, id=11060, stack(0x0000009aee900000,0x0000009aeea00000)]
+  0x000001b4dd9c4000 JavaThread "mysql_cdc_to_kafka_topic: Committer (6/12)#0" [_thread_blocked, id=49048, stack(0x0000009aee800000,0x0000009aee900000)]
+  0x000001b4dd9c2000 JavaThread "mysql_cdc_to_kafka_topic: Committer (5/12)#0" [_thread_blocked, id=36128, stack(0x0000009aee700000,0x0000009aee800000)]
+  0x000001b4dd9c1000 JavaThread "OutputFlusher for mysql_cdc_to_kafka_topic: Writer (11/12)#0" daemon [_thread_blocked, id=33808, stack(0x0000009aee600000,0x0000009aee700000)]
+  0x000001b4dd9c3800 JavaThread "mysql_cdc_to_kafka_topic: Committer (4/12)#0" [_thread_blocked, id=26392, stack(0x0000009aee500000,0x0000009aee600000)]
+  0x000001b4dd9c0800 JavaThread "mysql_cdc_to_kafka_topic: Committer (3/12)#0" [_thread_blocked, id=51960, stack(0x0000009aee400000,0x0000009aee500000)]
+  0x000001b4dd9bc800 JavaThread "mysql_cdc_to_kafka_topic: Committer (2/12)#0" [_thread_blocked, id=24172, stack(0x0000009aee300000,0x0000009aee400000)]
+  0x000001b4dd9be000 JavaThread "OutputFlusher for mysql_cdc_to_kafka_topic: Writer (8/12)#0" daemon [_thread_blocked, id=2688, stack(0x0000009aee200000,0x0000009aee300000)]
+  0x000001b4dd9c2800 JavaThread "mysql_cdc_to_kafka_topic: Committer (1/12)#0" [_thread_blocked, id=36944, stack(0x0000009aee100000,0x0000009aee200000)]
+  0x000001b4dbf40000 JavaThread "mysql_cdc_to_kafka_topic: Writer (12/12)#0" [_thread_blocked, id=44712, stack(0x0000009aee000000,0x0000009aee100000)]
+  0x000001b4dbf3e000 JavaThread "OutputFlusher for mysql_cdc_to_kafka_topic: Writer (7/12)#0" daemon [_thread_blocked, id=43336, stack(0x0000009aedf00000,0x0000009aee000000)]
+  0x000001b4dbf3d000 JavaThread "OutputFlusher for mysql_cdc_to_kafka_topic: Writer (10/12)#0" daemon [_thread_blocked, id=2252, stack(0x0000009aede00000,0x0000009aedf00000)]
+  0x000001b4dbf3c800 JavaThread "OutputFlusher for mysql_cdc_to_kafka_topic: Writer (9/12)#0" daemon [_thread_blocked, id=28624, stack(0x0000009aedd00000,0x0000009aede00000)]
+  0x000001b4dbf3b800 JavaThread "mysql_cdc_to_kafka_topic: Writer (11/12)#0" [_thread_blocked, id=13488, stack(0x0000009aedc00000,0x0000009aedd00000)]
+  0x000001b4dbf41000 JavaThread "mysql_cdc_to_kafka_topic: Writer (10/12)#0" [_thread_blocked, id=9700, stack(0x0000009aedb00000,0x0000009aedc00000)]
+  0x000001b4dbf3f800 JavaThread "mysql_cdc_to_kafka_topic: Writer (9/12)#0" [_thread_blocked, id=3524, stack(0x0000009aeda00000,0x0000009aedb00000)]
+  0x000001b4dbf3b000 JavaThread "OutputFlusher for mysql_cdc_to_kafka_topic: Writer (6/12)#0" daemon [_thread_blocked, id=26072, stack(0x0000009aed900000,0x0000009aeda00000)]
+  0x000001b4dbf3e800 JavaThread "mysql_cdc_to_kafka_topic: Writer (8/12)#0" [_thread_blocked, id=11092, stack(0x0000009aed800000,0x0000009aed900000)]
+  0x000001b4dbf33000 JavaThread "mysql_cdc_to_kafka_topic: Writer (7/12)#0" [_thread_blocked, id=33620, stack(0x0000009aed700000,0x0000009aed800000)]
+  0x000001b4dbf3a000 JavaThread "mysql_cdc_to_kafka_topic: Writer (6/12)#0" [_thread_blocked, id=29668, stack(0x0000009aed600000,0x0000009aed700000)]
+  0x000001b4dbf39800 JavaThread "OutputFlusher for mysql_cdc_to_kafka_topic: Writer (5/12)#0" daemon [_thread_blocked, id=38700, stack(0x0000009aed500000,0x0000009aed600000)]
+  0x000001b4dbf31800 JavaThread "mysql_cdc_to_kafka_topic: Writer (5/12)#0" [_thread_blocked, id=29280, stack(0x0000009aed400000,0x0000009aed500000)]
+  0x000001b4dbf32800 JavaThread "OutputFlusher for mysql_cdc_to_kafka_topic: Writer (4/12)#0" daemon [_thread_blocked, id=25688, stack(0x0000009aed300000,0x0000009aed400000)]
+  0x000001b4dbf35800 JavaThread "mysql_cdc_to_kafka_topic: Writer (4/12)#0" [_thread_blocked, id=53304, stack(0x0000009aed200000,0x0000009aed300000)]
+  0x000001b4dbf35000 JavaThread "OutputFlusher for mysql_cdc_to_kafka_topic: Writer (3/12)#0" daemon [_thread_blocked, id=38996, stack(0x0000009aed100000,0x0000009aed200000)]
+  0x000001b4dbf37000 JavaThread "mysql_cdc_to_kafka_topic: Writer (3/12)#0" [_thread_blocked, id=25004, stack(0x0000009aed000000,0x0000009aed100000)]
+  0x000001b4dbf34000 JavaThread "OutputFlusher for mysql_cdc_to_kafka_topic: Writer (2/12)#0" daemon [_thread_blocked, id=55188, stack(0x0000009aecf00000,0x0000009aed000000)]
+  0x000001b4dbf38800 JavaThread "OutputFlusher for mysql_cdc_to_kafka_topic: Writer (1/12)#0" daemon [_thread_blocked, id=28616, stack(0x0000009aece00000,0x0000009aecf00000)]
+  0x000001b4dbf36800 JavaThread "OutputFlusher for Map (12/12)#0" daemon [_thread_blocked, id=35304, stack(0x0000009aecd00000,0x0000009aece00000)]
+  0x000001b4dbf38000 JavaThread "mysql_cdc_to_kafka_topic: Writer (2/12)#0" [_thread_blocked, id=44392, stack(0x0000009aecc00000,0x0000009aecd00000)]
+  0x000001b4dd74b800 JavaThread "mysql_cdc_to_kafka_topic: Writer (1/12)#0" [_thread_blocked, id=9768, stack(0x0000009aecb00000,0x0000009aecc00000)]
+  0x000001b4dd74f800 JavaThread "Map (12/12)#0" [_thread_blocked, id=40340, stack(0x0000009aeca00000,0x0000009aecb00000)]
+  0x000001b4dd74b000 JavaThread "OutputFlusher for Map (11/12)#0" daemon [_thread_blocked, id=37676, stack(0x0000009aec900000,0x0000009aeca00000)]
+  0x000001b4dd74e800 JavaThread "OutputFlusher for Map (7/12)#0" daemon [_thread_blocked, id=22112, stack(0x0000009aec800000,0x0000009aec900000)]
+  0x000001b4dd74e000 JavaThread "OutputFlusher for Map (4/12)#0" daemon [_thread_blocked, id=54160, stack(0x0000009aec700000,0x0000009aec800000)]
+  0x000001b4dd74d000 JavaThread "OutputFlusher for Map (9/12)#0" daemon [_thread_blocked, id=25428, stack(0x0000009aec600000,0x0000009aec700000)]
+  0x000001b4dd74a000 JavaThread "OutputFlusher for Map (10/12)#0" daemon [_thread_blocked, id=41128, stack(0x0000009aec500000,0x0000009aec600000)]
+  0x000001b4dd74c800 JavaThread "OutputFlusher for Map (6/12)#0" daemon [_thread_blocked, id=38412, stack(0x0000009aec400000,0x0000009aec500000)]
+  0x000001b4dd742800 JavaThread "Map (11/12)#0" [_thread_blocked, id=19104, stack(0x0000009aec300000,0x0000009aec400000)]
+  0x000001b4dd749800 JavaThread "Map (10/12)#0" [_thread_blocked, id=18392, stack(0x0000009aec200000,0x0000009aec300000)]
+  0x000001b4dd748800 JavaThread "Map (9/12)#0" [_thread_blocked, id=12044, stack(0x0000009aec100000,0x0000009aec200000)]
+  0x000001b4dd741000 JavaThread "OutputFlusher for Map (3/12)#0" daemon [_thread_blocked, id=53152, stack(0x0000009aec000000,0x0000009aec100000)]
+  0x000001b4dd748000 JavaThread "OutputFlusher for Map (8/12)#0" daemon [_thread_blocked, id=14168, stack(0x0000009aebf00000,0x0000009aec000000)]
+  0x000001b4dd742000 JavaThread "Map (7/12)#0" [_thread_blocked, id=35312, stack(0x0000009aebe00000,0x0000009aebf00000)]
+  0x000001b4dd740800 JavaThread "OutputFlusher for Map (1/12)#0" daemon [_thread_blocked, id=55068, stack(0x0000009aebd00000,0x0000009aebe00000)]
+  0x000001b4dd745000 JavaThread "Map (8/12)#0" [_thread_blocked, id=31816, stack(0x0000009aebc00000,0x0000009aebd00000)]
+  0x000001b4dd747000 JavaThread "OutputFlusher for db_data_convert_json (1/1)#0" daemon [_thread_blocked, id=32448, stack(0x0000009aebb00000,0x0000009aebc00000)]
+  0x000001b4dd744000 JavaThread "OutputFlusher for db_data_convert_json (1/1)#0" daemon [_thread_blocked, id=45884, stack(0x0000009aeba00000,0x0000009aebb00000)]
+  0x000001b4dd745800 JavaThread "OutputFlusher for Map (5/12)#0" daemon [_thread_blocked, id=29112, stack(0x0000009aeb900000,0x0000009aeba00000)]
+  0x000001b4dd743800 JavaThread "OutputFlusher for db_data_convert_json (1/1)#0" daemon [_thread_blocked, id=51296, stack(0x0000009aeb800000,0x0000009aeb900000)]
+  0x000001b4dd746800 JavaThread "OutputFlusher for Map (2/12)#0" daemon [_thread_blocked, id=44692, stack(0x0000009aeb700000,0x0000009aeb800000)]
+  0x000001b4d65e5800 JavaThread "Map (6/12)#0" [_thread_blocked, id=36924, stack(0x0000009aeb600000,0x0000009aeb700000)]
+  0x000001b4d65e4000 JavaThread "Map (5/12)#0" [_thread_blocked, id=25096, stack(0x0000009aeb500000,0x0000009aeb600000)]
+  0x000001b4d65e6000 JavaThread "Map (4/12)#0" [_thread_blocked, id=23520, stack(0x0000009aeb400000,0x0000009aeb500000)]
+  0x000001b4d65e2800 JavaThread "Map (3/12)#0" [_thread_blocked, id=34060, stack(0x0000009aeb300000,0x0000009aeb400000)]
+  0x000001b4d65e3000 JavaThread "Map (2/12)#0" [_thread_blocked, id=41024, stack(0x0000009aeb200000,0x0000009aeb300000)]
+  0x000001b4d65e0000 JavaThread "Map (1/12)#0" [_thread_blocked, id=41968, stack(0x0000009aeb100000,0x0000009aeb200000)]
+  0x000001b4d65e0800 JavaThread "db_data_convert_json (1/1)#0" [_thread_blocked, id=28352, stack(0x0000009aeb000000,0x0000009aeb100000)]
+  0x000001b4d65df000 JavaThread "OutputFlusher for Source: mysql_cdc_dim_source (9/12)#0" daemon [_thread_blocked, id=26436, stack(0x0000009aeaf00000,0x0000009aeb000000)]
+  0x000001b4d65e4800 JavaThread "OutputFlusher for Source: mysql_cdc_dim_source (7/12)#0" daemon [_thread_blocked, id=2612, stack(0x0000009aeae00000,0x0000009aeaf00000)]
+  0x000001b4d65e1800 JavaThread "Source: mysql_cdc_dim_source (9/12)#0" [_thread_blocked, id=47512, stack(0x0000009aead00000,0x0000009aeae00000)]
+  0x000001b4d65d7800 JavaThread "Source: mysql_cdc_dim_source (7/12)#0" [_thread_blocked, id=15228, stack(0x0000009aeac00000,0x0000009aead00000)]
+  0x000001b4d65de800 JavaThread "OutputFlusher for Source: mysql_cdc_dim_source (10/12)#0" daemon [_thread_blocked, id=18124, stack(0x0000009aeab00000,0x0000009aeac00000)]
+  0x000001b4d65da800 JavaThread "OutputFlusher for Source: mysql_cdc_dim_source (8/12)#0" daemon [_thread_blocked, id=39468, stack(0x0000009aeaa00000,0x0000009aeab00000)]
+  0x000001b4d65da000 JavaThread "OutputFlusher for Source: mysql_cdc_dim_source (6/12)#0" daemon [_thread_blocked, id=41680, stack(0x0000009aea900000,0x0000009aeaa00000)]
+  0x000001b4d65dd000 JavaThread "Source: mysql_cdc_dim_source (8/12)#0" [_thread_blocked, id=38236, stack(0x0000009aea800000,0x0000009aea900000)]
+  0x000001b4d65dc000 JavaThread "Source: mysql_cdc_dim_source (10/12)#0" [_thread_blocked, id=28120, stack(0x0000009aea700000,0x0000009aea800000)]
+  0x000001b4d65d7000 JavaThread "OutputFlusher for Source: mysql_cdc_dim_source (12/12)#0" daemon [_thread_blocked, id=39172, stack(0x0000009aea600000,0x0000009aea700000)]
+  0x000001b4d65d8800 JavaThread "OutputFlusher for Source: mysql_cdc_dim_source (11/12)#0" daemon [_thread_blocked, id=45000, stack(0x0000009aea500000,0x0000009aea600000)]
+  0x000001b4d65dd800 JavaThread "Source: mysql_cdc_dim_source (6/12)#0" [_thread_blocked, id=21476, stack(0x0000009aea400000,0x0000009aea500000)]
+  0x000001b4d65db800 JavaThread "OutputFlusher for Source: mysql_cdc_main_source (6/12)#0" daemon [_thread_blocked, id=25484, stack(0x0000009aea300000,0x0000009aea400000)]
+  0x000001b4d65d9000 JavaThread "OutputFlusher for Source: mysql_cdc_main_source (11/12)#0" daemon [_thread_blocked, id=55064, stack(0x0000009aea200000,0x0000009aea300000)]
+  0x000001b4dd88f800 JavaThread "Source: mysql_cdc_dim_source (12/12)#0" [_thread_blocked, id=36984, stack(0x0000009aea100000,0x0000009aea200000)]
+  0x000001b4dd88e800 JavaThread "OutputFlusher for Source: mysql_cdc_main_source (7/12)#0" daemon [_thread_blocked, id=41832, stack(0x0000009aea000000,0x0000009aea100000)]
+  0x000001b4dd88e000 JavaThread "OutputFlusher for Source: mysql_cdc_main_source (12/12)#0" daemon [_thread_blocked, id=41996, stack(0x0000009ae9f00000,0x0000009aea000000)]
+  0x000001b4dd88d000 JavaThread "OutputFlusher for Source: mysql_cdc_dim_source (5/12)#0" daemon [_thread_blocked, id=15880, stack(0x0000009ae9e00000,0x0000009ae9f00000)]
+  0x000001b4dd88c800 JavaThread "OutputFlusher for Source: mysql_cdc_dim_source (4/12)#0" daemon [_thread_blocked, id=15088, stack(0x0000009ae9d00000,0x0000009ae9e00000)]
+  0x000001b4dd889000 JavaThread "OutputFlusher for Source: mysql_cdc_main_source (8/12)#0" daemon [_thread_blocked, id=51496, stack(0x0000009ae9c00000,0x0000009ae9d00000)]
+  0x000001b4dd88b800 JavaThread "OutputFlusher for Source: mysql_cdc_dim_source (3/12)#0" daemon [_thread_blocked, id=27448, stack(0x0000009ae9b00000,0x0000009ae9c00000)]
+  0x000001b4dd88b000 JavaThread "OutputFlusher for Source: mysql_cdc_dim_source (2/12)#0" daemon [_thread_blocked, id=24368, stack(0x0000009ae9a00000,0x0000009ae9b00000)]
+  0x000001b4dd888800 JavaThread "OutputFlusher for Source: mysql_cdc_main_source (1/12)#0" daemon [_thread_blocked, id=54564, stack(0x0000009ae9900000,0x0000009ae9a00000)]
+  0x000001b4dd884800 JavaThread "OutputFlusher for Source: mysql_cdc_main_source (5/12)#0" daemon [_thread_blocked, id=15544, stack(0x0000009ae9800000,0x0000009ae9900000)]
+  0x000001b4dd884000 JavaThread "OutputFlusher for Source: mysql_cdc_main_source (3/12)#0" daemon [_thread_blocked, id=54548, stack(0x0000009ae9700000,0x0000009ae9800000)]
+  0x000001b4dd887800 JavaThread "OutputFlusher for Source: mysql_cdc_dim_source (1/12)#0" daemon [_thread_blocked, id=54588, stack(0x0000009ae9600000,0x0000009ae9700000)]
+  0x000001b4dd887000 JavaThread "OutputFlusher for Source: mysql_cdc_main_source (2/12)#0" daemon [_thread_blocked, id=33080, stack(0x0000009ae9500000,0x0000009ae9600000)]
+  0x000001b4dd885800 JavaThread "OutputFlusher for Source: mysql_cdc_main_source (4/12)#0" daemon [_thread_blocked, id=39360, stack(0x0000009ae9400000,0x0000009ae9500000)]
+  0x000001b4dd886000 JavaThread "OutputFlusher for Source: mysql_cdc_main_source (9/12)#0" daemon [_thread_blocked, id=29076, stack(0x0000009ae9300000,0x0000009ae9400000)]
+  0x000001b4dd88a000 JavaThread "OutputFlusher for Source: mysql_cdc_main_source (10/12)#0" daemon [_thread_blocked, id=52704, stack(0x0000009ae9200000,0x0000009ae9300000)]
+  0x000001b4dd881000 JavaThread "Source: mysql_cdc_dim_source (11/12)#0" [_thread_blocked, id=52636, stack(0x0000009ae9100000,0x0000009ae9200000)]
+  0x000001b4dd883000 JavaThread "Source: mysql_cdc_dim_source (5/12)#0" [_thread_blocked, id=41372, stack(0x0000009ae9000000,0x0000009ae9100000)]
+  0x000001b4dd882800 JavaThread "Source: mysql_cdc_dim_source (4/12)#0" [_thread_blocked, id=34176, stack(0x0000009ae8f00000,0x0000009ae9000000)]
+  0x000001b4dd880000 JavaThread "Source: mysql_cdc_dim_source (3/12)#0" [_thread_blocked, id=35040, stack(0x0000009ae8e00000,0x0000009ae8f00000)]
+  0x000001b4dd881800 JavaThread "Source: mysql_cdc_dim_source (2/12)#0" [_thread_blocked, id=40136, stack(0x0000009ae8d00000,0x0000009ae8e00000)]
+  0x000001b4d32d1800 JavaThread "Source: mysql_cdc_dim_source (1/12)#0" [_thread_blocked, id=53348, stack(0x0000009ae8c00000,0x0000009ae8d00000)]
+  0x000001b4d32d1000 JavaThread "Source: mysql_cdc_main_source (12/12)#0" [_thread_blocked, id=26360, stack(0x0000009ae8b00000,0x0000009ae8c00000)]
+  0x000001b4d32d0000 JavaThread "Source: mysql_cdc_main_source (11/12)#0" [_thread_blocked, id=30104, stack(0x0000009ae8a00000,0x0000009ae8b00000)]
+  0x000001b4d32cf800 JavaThread "Source: mysql_cdc_main_source (10/12)#0" [_thread_blocked, id=32236, stack(0x0000009ae8900000,0x0000009ae8a00000)]
+  0x000001b4d32ce800 JavaThread "Source: mysql_cdc_main_source (9/12)#0" [_thread_blocked, id=53604, stack(0x0000009ae8800000,0x0000009ae8900000)]
+  0x000001b4d32ce000 JavaThread "Source: mysql_cdc_main_source (8/12)#0" [_thread_blocked, id=53352, stack(0x0000009ae8700000,0x0000009ae8800000)]
+  0x000001b4d32cd000 JavaThread "Source: mysql_cdc_main_source (7/12)#0" [_thread_blocked, id=53488, stack(0x0000009ae8600000,0x0000009ae8700000)]
+  0x000001b4d32cc800 JavaThread "Source: mysql_cdc_main_source (6/12)#0" [_thread_blocked, id=53468, stack(0x0000009ae8500000,0x0000009ae8600000)]
+  0x000001b4d32c5000 JavaThread "Source: mysql_cdc_main_source (5/12)#0" [_thread_blocked, id=53460, stack(0x0000009ae8400000,0x0000009ae8500000)]
+  0x000001b4d32c6800 JavaThread "Source: mysql_cdc_main_source (4/12)#0" [_thread_blocked, id=53484, stack(0x0000009ae8300000,0x0000009ae8400000)]
+  0x000001b4d32cb800 JavaThread "Source: mysql_cdc_main_source (3/12)#0" [_thread_blocked, id=53464, stack(0x0000009ae8200000,0x0000009ae8300000)]
+  0x000001b4d32cb000 JavaThread "Source: mysql_cdc_main_source (2/12)#0" [_thread_blocked, id=28348, stack(0x0000009ae8100000,0x0000009ae8200000)]
+  0x000001b4d32c7000 JavaThread "CloseableReaperThread" daemon [_thread_blocked, id=51136, stack(0x0000009ae8000000,0x0000009ae8100000)]
+  0x000001b4d32ca000 JavaThread "Source: mysql_cdc_main_source (1/12)#0" [_thread_blocked, id=41136, stack(0x0000009ae7f00000,0x0000009ae8000000)]
+  0x000001b4d32c2800 JavaThread "jobmanager-future-thread-12" daemon [_thread_blocked, id=45756, stack(0x0000009ae7e00000,0x0000009ae7f00000)]
+  0x000001b4d32c9800 JavaThread "jobmanager-future-thread-11" daemon [_thread_blocked, id=53520, stack(0x0000009ae7d00000,0x0000009ae7e00000)]
+  0x000001b4d32c4000 JavaThread "jobmanager-future-thread-10" daemon [_thread_blocked, id=53636, stack(0x0000009ae7c00000,0x0000009ae7d00000)]
+  0x000001b4d32c3800 JavaThread "jobmanager-future-thread-9" daemon [_thread_blocked, id=33812, stack(0x0000009ae7b00000,0x0000009ae7c00000)]
+  0x000001b4d32c8800 JavaThread "jobmanager-future-thread-8" daemon [_thread_blocked, id=52104, stack(0x0000009ae7a00000,0x0000009ae7b00000)]
+  0x000001b4d32c5800 JavaThread "jobmanager-future-thread-7" daemon [_thread_blocked, id=53784, stack(0x0000009ae7900000,0x0000009ae7a00000)]
+  0x000001b4d32c8000 JavaThread "jobmanager-future-thread-6" daemon [_thread_blocked, id=53512, stack(0x0000009ae7800000,0x0000009ae7900000)]
+  0x000001b4d3baf800 JavaThread "jobmanager-future-thread-5" daemon [_thread_blocked, id=53584, stack(0x0000009ae7700000,0x0000009ae7800000)]
+  0x000001b4d3bad800 JavaThread "jobmanager-future-thread-4" daemon [_thread_blocked, id=53592, stack(0x0000009ae7600000,0x0000009ae7700000)]
+  0x000001b4d3bac800 JavaThread "jobmanager-future-thread-3" daemon [_thread_blocked, id=53524, stack(0x0000009ae7500000,0x0000009ae7600000)]
+  0x000001b4d3baa000 JavaThread "jobmanager-future-thread-2" daemon [_thread_blocked, id=53568, stack(0x0000009ae7400000,0x0000009ae7500000)]
+  0x000001b4d3bac000 JavaThread "pool-1-thread-1" [_thread_blocked, id=53532, stack(0x0000009ae7300000,0x0000009ae7400000)]
+  0x000001b4d3baf000 JavaThread "jobmanager-future-thread-1" daemon [_thread_blocked, id=53560, stack(0x0000009ae7200000,0x0000009ae7300000)]
+  0x000001b4d3bb1000 JavaThread "SourceCoordinator-Source: mysql_cdc_dim_source-worker-thread-1" daemon [_thread_blocked, id=53576, stack(0x0000009ae7000000,0x0000009ae7100000)]
+  0x000001b4d3bb0800 JavaThread "snapshot-splitting" [_thread_blocked, id=53516, stack(0x0000009ae7100000,0x0000009ae7200000)]
+  0x000001b4d3ba9800 JavaThread "SourceCoordinator-Source: mysql_cdc_main_source-worker-thread-1" daemon [_thread_blocked, id=53588, stack(0x0000009ae6f00000,0x0000009ae7000000)]
+  0x000001b4d3bab000 JavaThread "snapshot-splitting" [_thread_in_native, id=53580, stack(0x0000009ae6e00000,0x0000009ae6f00000)]
+  0x000001b4d3bae000 JavaThread "Checkpoint Timer" daemon [_thread_blocked, id=53564, stack(0x0000009ae6c00000,0x0000009ae6d00000)]
+  0x000001b4d3ba2000 JavaThread "SourceCoordinator-Source: mysql_cdc_dim_source" [_thread_blocked, id=53556, stack(0x0000009ae6d00000,0x0000009ae6e00000)]
+  0x000001b4d3ba8000 JavaThread "SourceCoordinator-Source: mysql_cdc_main_source" [_thread_blocked, id=53536, stack(0x0000009ae6b00000,0x0000009ae6c00000)]
+  0x000001b4d3ba8800 JavaThread "connection-pool-cdh03:3306 connection adder" daemon [_thread_blocked, id=53472, stack(0x0000009ae6a00000,0x0000009ae6b00000)]
+  0x000001b4d3ba7000 JavaThread "connection-pool-cdh03:3306 housekeeper" daemon [_thread_blocked, id=53492, stack(0x0000009ae6900000,0x0000009ae6a00000)]
+  0x000001b4d3ba5800 JavaThread "mysql-cj-abandoned-connection-cleanup" daemon [_thread_blocked, id=53660, stack(0x0000009ae6800000,0x0000009ae6900000)]
+  0x000001b4d3ba2800 JavaThread "mysql-cj-abandoned-connection-cleanup" daemon [_thread_blocked, id=980, stack(0x0000009ae6700000,0x0000009ae6800000)]
+  0x000001b4d3ba5000 JavaThread "jobmanager_3-main-scheduler-thread-1" daemon [_thread_blocked, id=47392, stack(0x0000009ae6600000,0x0000009ae6700000)]
+  0x000001b4d3ba4000 JavaThread "IPC Parameter Sending Thread #0" daemon [_thread_blocked, id=12120, stack(0x0000009ae6500000,0x0000009ae6600000)]
+  0x000001b4d3ba3800 JavaThread "IPC Client (1475249575) connection to cdh01/192.168.200.101:8020 from root" daemon [_thread_blocked, id=42596, stack(0x0000009ae6400000,0x0000009ae6500000)]
+  0x000001b4d3ba6800 JavaThread "org.apache.hadoop.fs.FileSystem$Statistics$StatisticsDataReferenceCleaner" daemon [_thread_blocked, id=53808, stack(0x0000009ae6200000,0x0000009ae6300000)]
+  0x000001b4d4802800 JavaThread "jobmanager-io-thread-1" daemon [_thread_blocked, id=53792, stack(0x0000009ae6100000,0x0000009ae6200000)]
+  0x000001b4d4808800 JavaThread "taskmanager_0-main-scheduler-thread-1" daemon [_thread_blocked, id=50688, stack(0x0000009ae6000000,0x0000009ae6100000)]
+  0x000001b4d4801000 JavaThread "flink-akka.actor.default-dispatcher-11" [_thread_blocked, id=40204, stack(0x0000009ae5f00000,0x0000009ae6000000)]
+  0x000001b4d4805000 JavaThread "ForkJoinPool.commonPool-worker-13" daemon [_thread_blocked, id=3024, stack(0x0000009ae5e00000,0x0000009ae5f00000)]
+  0x000001b4d4808000 JavaThread "ForkJoinPool.commonPool-worker-4" daemon [_thread_blocked, id=54712, stack(0x0000009ae5d00000,0x0000009ae5e00000)]
+  0x000001b4d4807000 JavaThread "ForkJoinPool.commonPool-worker-11" daemon [_thread_blocked, id=49500, stack(0x0000009ae5c00000,0x0000009ae5d00000)]
+  0x000001b4d4805800 JavaThread "ForkJoinPool.commonPool-worker-2" daemon [_thread_blocked, id=50432, stack(0x0000009ae5b00000,0x0000009ae5c00000)]
+  0x000001b4d4804000 JavaThread "flink-akka.actor.default-dispatcher-10" [_thread_blocked, id=53952, stack(0x0000009ae5a00000,0x0000009ae5b00000)]
+  0x000001b4d4803800 JavaThread "flink-akka.actor.default-dispatcher-9" [_thread_blocked, id=47400, stack(0x0000009ae5900000,0x0000009ae5a00000)]
+  0x000001b4d4806800 JavaThread "resourcemanager_1-main-scheduler-thread-1" daemon [_thread_blocked, id=22928, stack(0x0000009ae5800000,0x0000009ae5900000)]
+  0x000001b4d4802000 JavaThread "mini-cluster-io-thread-4" daemon [_thread_blocked, id=12336, stack(0x0000009ae5700000,0x0000009ae5800000)]
+  0x000001b4d47f9800 JavaThread "pool-2-thread-1" [_thread_blocked, id=51044, stack(0x0000009ae5600000,0x0000009ae5700000)]
+  0x000001b4d47ff000 JavaThread "mini-cluster-io-thread-3" daemon [_thread_blocked, id=37912, stack(0x0000009ae5500000,0x0000009ae5600000)]
+  0x000001b4d47fe000 JavaThread "mini-cluster-io-thread-2" daemon [_thread_blocked, id=22216, stack(0x0000009ae5400000,0x0000009ae5500000)]
+  0x000001b4d4800800 JavaThread "Flink-DispatcherRestEndpoint-thread-1" daemon [_thread_blocked, id=43296, stack(0x0000009ae5300000,0x0000009ae5400000)]
+  0x000001b4d47fc800 JavaThread "mini-cluster-io-thread-1" daemon [_thread_blocked, id=11956, stack(0x0000009ae5200000,0x0000009ae5300000)]
+  0x000001b4d47fb800 JavaThread "flink-rest-server-netty-boss-thread-1" daemon [_thread_in_native, id=47328, stack(0x0000009ae5100000,0x0000009ae5200000)]
+  0x000001b4d47fa000 JavaThread "Flink-Metric-View-Updater-thread-1" daemon [_thread_blocked, id=12128, stack(0x0000009ae5000000,0x0000009ae5100000)]
+  0x000001b4d47fd800 JavaThread "IOManager reader thread #1" daemon [_thread_blocked, id=31824, stack(0x0000009ae4f00000,0x0000009ae5000000)]
+  0x000001b4d47ff800 JavaThread "IOManager writer thread #1" daemon [_thread_blocked, id=16428, stack(0x0000009ae4e00000,0x0000009ae4f00000)]
+  0x000001b4d47fb000 JavaThread "Timer-2" daemon [_thread_blocked, id=53988, stack(0x0000009ae4d00000,0x0000009ae4e00000)]
+  0x000001b4d63a2800 JavaThread "Timer-1" daemon [_thread_blocked, id=32652, stack(0x0000009ae4c00000,0x0000009ae4d00000)]
+  0x000001b4d639e000 JavaThread "BLOB Server listener at 58449" daemon [_thread_in_native, id=50972, stack(0x0000009ae4b00000,0x0000009ae4c00000)]
+  0x000001b4d639b800 JavaThread "Timer-0" daemon [_thread_blocked, id=53916, stack(0x0000009ae4a00000,0x0000009ae4b00000)]
+  0x000001b4d639f800 JavaThread "ForkJoinPool.commonPool-worker-9" daemon [_thread_blocked, id=26356, stack(0x0000009ae4800000,0x0000009ae4900000)]
+  0x000001b4d639d000 JavaThread "flink-metrics-akka.actor.supervisor-dispatcher-8" [_thread_blocked, id=31968, stack(0x0000009ae4700000,0x0000009ae4800000)]
+  0x000001b4d63a0000 JavaThread "flink-metrics-7" [_thread_blocked, id=25292, stack(0x0000009ae4600000,0x0000009ae4700000)]
+  0x000001b4d639c800 JavaThread "flink-metrics-akka.actor.internal-dispatcher-6" [_thread_blocked, id=32948, stack(0x0000009ae4500000,0x0000009ae4600000)]
+  0x000001b4d63a1800 JavaThread "flink-metrics-akka.actor.internal-dispatcher-5" [_thread_blocked, id=25744, stack(0x0000009ae4400000,0x0000009ae4500000)]
+  0x000001b4d63a1000 JavaThread "flink-metrics-akka.actor.internal-dispatcher-4" [_thread_blocked, id=50620, stack(0x0000009ae4300000,0x0000009ae4400000)]
+  0x000001b4d639e800 JavaThread "flink-metrics-akka.actor.internal-dispatcher-3" [_thread_blocked, id=31660, stack(0x0000009ae4200000,0x0000009ae4300000)]
+  0x000001b4d42bd000 JavaThread "flink-metrics-akka.actor.internal-dispatcher-2" [_thread_blocked, id=5828, stack(0x0000009ae4100000,0x0000009ae4200000)]
+  0x000001b4d42bc800 JavaThread "flink-metrics-scheduler-1" [_thread_blocked, id=47240, stack(0x0000009ae4000000,0x0000009ae4100000)]
+  0x000001b4d42c2800 JavaThread "flink-akka.actor.supervisor-dispatcher-8" [_thread_blocked, id=51020, stack(0x0000009ae3f00000,0x0000009ae4000000)]
+  0x000001b4d42bf800 JavaThread "flink-akka.actor.default-dispatcher-7" [_thread_blocked, id=51912, stack(0x0000009ae3e00000,0x0000009ae3f00000)]
+  0x000001b4d42be800 JavaThread "flink-akka.actor.internal-dispatcher-6" [_thread_blocked, id=30688, stack(0x0000009ae3d00000,0x0000009ae3e00000)]
+  0x000001b4d42c1800 JavaThread "flink-akka.actor.internal-dispatcher-5" [_thread_blocked, id=18216, stack(0x0000009ae3c00000,0x0000009ae3d00000)]
+  0x000001b4d42c1000 JavaThread "flink-akka.actor.internal-dispatcher-4" [_thread_blocked, id=50596, stack(0x0000009ae3b00000,0x0000009ae3c00000)]
+  0x000001b4d42bb800 JavaThread "flink-akka.actor.internal-dispatcher-3" [_thread_blocked, id=37608, stack(0x0000009ae3a00000,0x0000009ae3b00000)]
+  0x000001b4d42c0000 JavaThread "flink-akka.actor.internal-dispatcher-2" [_thread_blocked, id=33896, stack(0x0000009ae3900000,0x0000009ae3a00000)]
+  0x000001b4d42be000 JavaThread "flink-scheduler-1" [_thread_blocked, id=28444, stack(0x0000009ae3800000,0x0000009ae3900000)]
+  0x000001b4d3213000 JavaThread "Service Thread" daemon [_thread_blocked, id=12540, stack(0x0000009ae3600000,0x0000009ae3700000)]
+  0x000001b4d317d000 JavaThread "C1 CompilerThread3" daemon [_thread_blocked, id=51920, stack(0x0000009ae3500000,0x0000009ae3600000)]
+  0x000001b4d3178800 JavaThread "C2 CompilerThread2" daemon [_thread_in_native, id=17260, stack(0x0000009ae3400000,0x0000009ae3500000)]
+  0x000001b4d316d800 JavaThread "C2 CompilerThread1" daemon [_thread_in_native, id=27604, stack(0x0000009ae3300000,0x0000009ae3400000)]
+=>0x000001b4d316b000 JavaThread "C2 CompilerThread0" daemon [_thread_in_native, id=31172, stack(0x0000009ae3200000,0x0000009ae3300000)]
+  0x000001b4d3165000 JavaThread "Monitor Ctrl-Break" daemon [_thread_in_native, id=41376, stack(0x0000009ae3100000,0x0000009ae3200000)]
+  0x000001b4d2152800 JavaThread "Attach Listener" daemon [_thread_blocked, id=48336, stack(0x0000009ae3000000,0x0000009ae3100000)]
+  0x000001b4cfd92000 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=52448, stack(0x0000009ae2f00000,0x0000009ae3000000)]
+  0x000001b4cfd71800 JavaThread "Finalizer" daemon [_thread_blocked, id=19228, stack(0x0000009ae2e00000,0x0000009ae2f00000)]
+  0x000001b4cfd6a000 JavaThread "Reference Handler" daemon [_thread_blocked, id=52444, stack(0x0000009ae2d00000,0x0000009ae2e00000)]
+  0x000001b4a25ff800 JavaThread "main" [_thread_blocked, id=37736, stack(0x0000009ae2100000,0x0000009ae2200000)]
+
+Other Threads:
+  0x000001b4cfd3f000 VMThread [stack: 0x0000009ae2c00000,0x0000009ae2d00000] [id=31036]
+  0x000001b4d32a7000 WatcherThread [stack: 0x0000009ae3700000,0x0000009ae3800000] [id=27832]
+
+VM state:at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x000001b4a25fc3d0] Safepoint_lock - owner thread: 0x000001b4cfd3f000
+[0x000001b4a25fbed0] Threads_lock - owner thread: 0x000001b4cfd3f000
+
+heap address: 0x00000004c4400000, size: 12220 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 3
+Compressed class space size: 1073741824 Address: 0x00000007c0000000
+
+Heap:
+ PSYoungGen      total 392704K, used 325699K [0x00000006c1700000, 0x00000006e2680000, 0x00000007c0000000)
+  eden space 360448K, 81% used [0x00000006c1700000,0x00000006d379dcc0,0x00000006d7700000)
+  from space 32256K, 93% used [0x00000006d7700000,0x00000006d9473288,0x00000006d9680000)
+  to   space 27136K, 0% used [0x00000006e0c00000,0x00000006e0c00000,0x00000006e2680000)
+ ParOldGen       total 696320K, used 24167K [0x00000004c4400000, 0x00000004eec00000, 0x00000006c1700000)
+  object space 696320K, 3% used [0x00000004c4400000,0x00000004c5b99dd0,0x00000004eec00000)
+ Metaspace       used 82353K, capacity 89306K, committed 89512K, reserved 1126400K
+  class space    used 11365K, capacity 12422K, committed 12456K, reserved 1048576K
+
+Card table byte_map: [0x000001b4b3450000,0x000001b4b4c30000] byte_map_base: 0x000001b4b0e2e000
+
+Marking Bits: (ParMarkBitMap*) 0x00000000557f7fe0
+ Begin Bits: [0x000001b4b5c20000, 0x000001b4c1b10000)
+ End Bits:   [0x000001b4c1b10000, 0x000001b4cda00000)
+
+Polling page: 0x000001b4a2800000
+
+CodeCache: size=245760Kb used=14957Kb max_used=14957Kb free=230802Kb
+ bounds [0x000001b4a4090000, 0x000001b4a4f50000, 0x000001b4b3090000]
+ total_blobs=5630 nmethods=4821 adapters=721
+ compilation: enabled
+
+Compilation events (10 events):
+Event: 19.391 Thread 0x000001b4d317d000 5667       2       java.lang.AbstractStringBuilder::append (54 bytes)
+Event: 19.391 Thread 0x000001b4d317d000 nmethod 5667 0x000001b4a4851e10 code [0x000001b4a4851fc0, 0x000001b4a4852310]
+Event: 19.391 Thread 0x000001b4d317d000 5668       2       io.debezium.ddl.parser.mysql.generated.MySqlParserBaseListener::enterDefaultValue (1 bytes)
+Event: 19.391 Thread 0x000001b4d317d000 nmethod 5668 0x000001b4a4851ad0 code [0x000001b4a4851c20, 0x000001b4a4851d78]
+Event: 19.392 Thread 0x000001b4d317d000 5669       2       java.util.concurrent.locks.AbstractQueuedSynchronizer::transferAfterCancelledWait (34 bytes)
+Event: 19.392 Thread 0x000001b4d317d000 nmethod 5669 0x000001b4a4851450 code [0x000001b4a48515e0, 0x000001b4a4851900]
+Event: 19.392 Thread 0x000001b4d317d000 5670       2       java.util.concurrent.Executors$RunnableAdapter::call (14 bytes)
+Event: 19.392 Thread 0x000001b4d317d000 nmethod 5670 0x000001b4a4ca3550 code [0x000001b4a4ca36c0, 0x000001b4a4ca3850]
+Event: 19.394 Thread 0x000001b4d317d000 5671       1       com.mysql.cj.protocol.a.PacketSplitter::getPacketLen (5 bytes)
+Event: 19.394 Thread 0x000001b4d317d000 nmethod 5671 0x000001b4a4851190 code [0x000001b4a48512e0, 0x000001b4a48513f8]
+
+GC Heap History (10 events):
+Event: 8.677 GC heap before
+{Heap before GC invocations=4 (full 2):
+ PSYoungGen      total 275968K, used 13953K [0x00000006c1700000, 0x00000006dc380000, 0x00000007c0000000)
+  eden space 261632K, 0% used [0x00000006c1700000,0x00000006c1700000,0x00000006d1680000)
+  from space 14336K, 97% used [0x00000006db580000,0x00000006dc320698,0x00000006dc380000)
+  to   space 32256K, 0% used [0x00000006d8480000,0x00000006d8480000,0x00000006da400000)
+ ParOldGen       total 315904K, used 14415K [0x00000004c4400000, 0x00000004d7880000, 0x00000006c1700000)
+  object space 315904K, 4% used [0x00000004c4400000,0x00000004c5213ed8,0x00000004d7880000)
+ Metaspace       used 33263K, capacity 35380K, committed 35496K, reserved 1079296K
+  class space    used 4574K, capacity 4930K, committed 5032K, reserved 1048576K
+Event: 8.724 GC heap after
+Heap after GC invocations=4 (full 2):
+ PSYoungGen      total 275968K, used 0K [0x00000006c1700000, 0x00000006dc380000, 0x00000007c0000000)
+  eden space 261632K, 0% used [0x00000006c1700000,0x00000006c1700000,0x00000006d1680000)
+  from space 14336K, 0% used [0x00000006db580000,0x00000006db580000,0x00000006dc380000)
+  to   space 32256K, 0% used [0x00000006d8480000,0x00000006d8480000,0x00000006da400000)
+ ParOldGen       total 498688K, used 18588K [0x00000004c4400000, 0x00000004e2b00000, 0x00000006c1700000)
+  object space 498688K, 3% used [0x00000004c4400000,0x00000004c5627188,0x00000004e2b00000)
+ Metaspace       used 33260K, capacity 35374K, committed 35496K, reserved 1079296K
+  class space    used 4573K, capacity 4929K, committed 5032K, reserved 1048576K
+}
+Event: 14.245 GC heap before
+{Heap before GC invocations=5 (full 2):
+ PSYoungGen      total 275968K, used 261632K [0x00000006c1700000, 0x00000006dc380000, 0x00000007c0000000)
+  eden space 261632K, 100% used [0x00000006c1700000,0x00000006d1680000,0x00000006d1680000)
+  from space 14336K, 0% used [0x00000006db580000,0x00000006db580000,0x00000006dc380000)
+  to   space 32256K, 0% used [0x00000006d8480000,0x00000006d8480000,0x00000006da400000)
+ ParOldGen       total 498688K, used 18588K [0x00000004c4400000, 0x00000004e2b00000, 0x00000006c1700000)
+  object space 498688K, 3% used [0x00000004c4400000,0x00000004c5627188,0x00000004e2b00000)
+ Metaspace       used 45932K, capacity 48960K, committed 49192K, reserved 1091584K
+  class space    used 6381K, capacity 6869K, committed 6952K, reserved 1048576K
+Event: 14.262 GC heap after
+Heap after GC invocations=5 (full 2):
+ PSYoungGen      total 366592K, used 16288K [0x00000006c1700000, 0x00000006db600000, 0x00000007c0000000)
+  eden space 350208K, 0% used [0x00000006c1700000,0x00000006c1700000,0x00000006d6d00000)
+  from space 16384K, 99% used [0x00000006d8480000,0x00000006d94683e8,0x00000006d9480000)
+  to   space 32256K, 0% used [0x00000006d9680000,0x00000006d9680000,0x00000006db600000)
+ ParOldGen       total 498688K, used 18596K [0x00000004c4400000, 0x00000004e2b00000, 0x00000006c1700000)
+  object space 498688K, 3% used [0x00000004c4400000,0x00000004c5629188,0x00000004e2b00000)
+ Metaspace       used 45932K, capacity 48960K, committed 49192K, reserved 1091584K
+  class space    used 6381K, capacity 6869K, committed 6952K, reserved 1048576K
+}
+Event: 16.306 GC heap before
+{Heap before GC invocations=6 (full 2):
+ PSYoungGen      total 366592K, used 109844K [0x00000006c1700000, 0x00000006db600000, 0x00000007c0000000)
+  eden space 350208K, 26% used [0x00000006c1700000,0x00000006c725cd40,0x00000006d6d00000)
+  from space 16384K, 99% used [0x00000006d8480000,0x00000006d94683e8,0x00000006d9480000)
+  to   space 32256K, 0% used [0x00000006d9680000,0x00000006d9680000,0x00000006db600000)
+ ParOldGen       total 498688K, used 18596K [0x00000004c4400000, 0x00000004e2b00000, 0x00000006c1700000)
+  object space 498688K, 3% used [0x00000004c4400000,0x00000004c5629188,0x00000004e2b00000)
+ Metaspace       used 55902K, capacity 59006K, committed 59160K, reserved 1099776K
+  class space    used 7522K, capacity 8010K, committed 8104K, reserved 1048576K
+Event: 16.318 GC heap after
+Heap after GC invocations=6 (full 2):
+ PSYoungGen      total 392704K, used 16007K [0x00000006c1700000, 0x00000006e1800000, 0x00000007c0000000)
+  eden space 360448K, 0% used [0x00000006c1700000,0x00000006c1700000,0x00000006d7700000)
+  from space 32256K, 49% used [0x00000006d9680000,0x00000006da621ce8,0x00000006db600000)
+  to   space 32256K, 0% used [0x00000006d7700000,0x00000006d7700000,0x00000006d9680000)
+ ParOldGen       total 498688K, used 18604K [0x00000004c4400000, 0x00000004e2b00000, 0x00000006c1700000)
+  object space 498688K, 3% used [0x00000004c4400000,0x00000004c562b188,0x00000004e2b00000)
+ Metaspace       used 55902K, capacity 59006K, committed 59160K, reserved 1099776K
+  class space    used 7522K, capacity 8010K, committed 8104K, reserved 1048576K
+}
+Event: 16.318 GC heap before
+{Heap before GC invocations=7 (full 3):
+ PSYoungGen      total 392704K, used 16007K [0x00000006c1700000, 0x00000006e1800000, 0x00000007c0000000)
+  eden space 360448K, 0% used [0x00000006c1700000,0x00000006c1700000,0x00000006d7700000)
+  from space 32256K, 49% used [0x00000006d9680000,0x00000006da621ce8,0x00000006db600000)
+  to   space 32256K, 0% used [0x00000006d7700000,0x00000006d7700000,0x00000006d9680000)
+ ParOldGen       total 498688K, used 18604K [0x00000004c4400000, 0x00000004e2b00000, 0x00000006c1700000)
+  object space 498688K, 3% used [0x00000004c4400000,0x00000004c562b188,0x00000004e2b00000)
+ Metaspace       used 55902K, capacity 59006K, committed 59160K, reserved 1099776K
+  class space    used 7522K, capacity 8010K, committed 8104K, reserved 1048576K
+Event: 16.426 GC heap after
+Heap after GC invocations=7 (full 3):
+ PSYoungGen      total 392704K, used 0K [0x00000006c1700000, 0x00000006e1800000, 0x00000007c0000000)
+  eden space 360448K, 0% used [0x00000006c1700000,0x00000006c1700000,0x00000006d7700000)
+  from space 32256K, 0% used [0x00000006d9680000,0x00000006d9680000,0x00000006db600000)
+  to   space 32256K, 0% used [0x00000006d7700000,0x00000006d7700000,0x00000006d9680000)
+ ParOldGen       total 696320K, used 24159K [0x00000004c4400000, 0x00000004eec00000, 0x00000006c1700000)
+  object space 696320K, 3% used [0x00000004c4400000,0x00000004c5b97dd0,0x00000004eec00000)
+ Metaspace       used 55825K, capacity 58798K, committed 59160K, reserved 1099776K
+  class space    used 7497K, capacity 7972K, committed 8104K, reserved 1048576K
+}
+Event: 18.183 GC heap before
+{Heap before GC invocations=8 (full 3):
+ PSYoungGen      total 392704K, used 360448K [0x00000006c1700000, 0x00000006e1800000, 0x00000007c0000000)
+  eden space 360448K, 100% used [0x00000006c1700000,0x00000006d7700000,0x00000006d7700000)
+  from space 32256K, 0% used [0x00000006d9680000,0x00000006d9680000,0x00000006db600000)
+  to   space 32256K, 0% used [0x00000006d7700000,0x00000006d7700000,0x00000006d9680000)
+ ParOldGen       total 696320K, used 24159K [0x00000004c4400000, 0x00000004eec00000, 0x00000006c1700000)
+  object space 696320K, 3% used [0x00000004c4400000,0x00000004c5b97dd0,0x00000004eec00000)
+ Metaspace       used 69821K, capacity 76056K, committed 76072K, reserved 1114112K
+  class space    used 9577K, capacity 10527K, committed 10536K, reserved 1048576K
+Event: 18.204 GC heap after
+Heap after GC invocations=8 (full 3):
+ PSYoungGen      total 392704K, used 30156K [0x00000006c1700000, 0x00000006e2680000, 0x00000007c0000000)
+  eden space 360448K, 0% used [0x00000006c1700000,0x00000006c1700000,0x00000006d7700000)
+  from space 32256K, 93% used [0x00000006d7700000,0x00000006d9473288,0x00000006d9680000)
+  to   space 27136K, 0% used [0x00000006e0c00000,0x00000006e0c00000,0x00000006e2680000)
+ ParOldGen       total 696320K, used 24167K [0x00000004c4400000, 0x00000004eec00000, 0x00000006c1700000)
+  object space 696320K, 3% used [0x00000004c4400000,0x00000004c5b99dd0,0x00000004eec00000)
+ Metaspace       used 69821K, capacity 76056K, committed 76072K, reserved 1114112K
+  class space    used 9577K, capacity 10527K, committed 10536K, reserved 1048576K
+}
+
+Deoptimization events (10 events):
+Event: 19.121 Thread 0x000001b4d3bb0800 Uncommon trap: reason=class_check action=maybe_recompile pc=0x000001b4a47d7d2c method=org.antlr.v4.runtime.atn.SingletonPredictionContext.equals(Ljava/lang/Object;)Z @ 8
+Event: 19.122 Thread 0x000001b4d3bb0800 Uncommon trap: reason=class_check action=maybe_recompile pc=0x000001b4a47d7d2c method=org.antlr.v4.runtime.atn.SingletonPredictionContext.equals(Ljava/lang/Object;)Z @ 8
+Event: 19.127 Thread 0x000001b4d3bb0800 Uncommon trap: reason=array_check action=maybe_recompile pc=0x000001b4a4a801a0 method=org.antlr.v4.runtime.misc.Array2DHashSet.getOrAddImpl(Ljava/lang/Object;)Ljava/lang/Object; @ 133
+Event: 19.127 Thread 0x000001b4d3bb0800 Uncommon trap: reason=array_check action=maybe_recompile pc=0x000001b4a4a801a0 method=org.antlr.v4.runtime.misc.Array2DHashSet.getOrAddImpl(Ljava/lang/Object;)Ljava/lang/Object; @ 133
+Event: 19.220 Thread 0x000001b4d3bb0800 Uncommon trap: reason=class_check action=maybe_recompile pc=0x000001b4a4d96a78 method=java.lang.AbstractStringBuilder.append(Ljava/lang/CharSequence;)Ljava/lang/AbstractStringBuilder; @ 37
+Event: 19.221 Thread 0x000001b4d3bab000 Uncommon trap: reason=class_check action=maybe_recompile pc=0x000001b4a4d96a78 method=java.lang.AbstractStringBuilder.append(Ljava/lang/CharSequence;)Ljava/lang/AbstractStringBuilder; @ 37
+Event: 19.221 Thread 0x000001b4d3bab000 Uncommon trap: reason=class_check action=maybe_recompile pc=0x000001b4a4d96a78 method=java.lang.AbstractStringBuilder.append(Ljava/lang/CharSequence;)Ljava/lang/AbstractStringBuilder; @ 37
+Event: 19.232 Thread 0x000001b4d3bb0800 Uncommon trap: reason=class_check action=maybe_recompile pc=0x000001b4a4d96a78 method=java.lang.AbstractStringBuilder.append(Ljava/lang/CharSequence;)Ljava/lang/AbstractStringBuilder; @ 37
+Event: 19.234 Thread 0x000001b4d3bab000 Uncommon trap: reason=unstable_if action=reinterpret pc=0x000001b4a4d847e0 method=java.util.regex.Pattern$Curly.match0(Ljava/util/regex/Matcher;IILjava/lang/CharSequence;)Z @ 130
+Event: 19.369 Thread 0x000001b4d3bab000 Uncommon trap: reason=array_check action=maybe_recompile pc=0x000001b4a4f34044 method=org.antlr.v4.runtime.misc.Array2DHashSet.getOrAddImpl(Ljava/lang/Object;)Ljava/lang/Object; @ 36
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (10 events):
+Event: 18.871 Thread 0x000001b4dd35d000 Exception <a 'java/lang/ClassNotFoundException': com/retailersv1/domain/TableProcessDimBeanInfo> (0x00000006cc85a788) thrown at [C:\jenkins\workspace\8-2-build-windows-amd64-cygwin\jdk8u301\1513\hotspot\src\share\vm\classfile\systemDictionary.cpp, line 21
+Event: 18.871 Thread 0x000001b4dd364800 Exception <a 'java/lang/ClassNotFoundException': com/retailersv1/domain/TableProcessDimCustomizer> (0x00000006ccb4ebc8) thrown at [C:\jenkins\workspace\8-2-build-windows-amd64-cygwin\jdk8u301\1513\hotspot\src\share\vm\classfile\systemDictionary.cpp, line 
+Event: 18.880 Thread 0x000001b4dd363000 Exception <a 'java/lang/ClassNotFoundException': com/retailersv1/domain/TableProcessDimCustomizer> (0x00000006cce77cb0) thrown at [C:\jenkins\workspace\8-2-build-windows-amd64-cygwin\jdk8u301\1513\hotspot\src\share\vm\classfile\systemDictionary.cpp, line 
+Event: 18.882 Thread 0x000001b4dd361000 Exception <a 'java/lang/ClassNotFoundException': com/retailersv1/domain/TableProcessDimBeanInfo> (0x00000006ccec8e28) thrown at [C:\jenkins\workspace\8-2-build-windows-amd64-cygwin\jdk8u301\1513\hotspot\src\share\vm\classfile\systemDictionary.cpp, line 21
+Event: 18.885 Thread 0x000001b4dd361800 Exception <a 'java/lang/ClassNotFoundException': com/retailersv1/domain/TableProcessDimBeanInfo> (0x00000006ccfedec0) thrown at [C:\jenkins\workspace\8-2-build-windows-amd64-cygwin\jdk8u301\1513\hotspot\src\share\vm\classfile\systemDictionary.cpp, line 21
+Event: 18.885 Thread 0x000001b4dd365800 Exception <a 'java/lang/ClassNotFoundException': com/retailersv1/domain/TableProcessDimCustomizer> (0x00000006cccc8dc8) thrown at [C:\jenkins\workspace\8-2-build-windows-amd64-cygwin\jdk8u301\1513\hotspot\src\share\vm\classfile\systemDictionary.cpp, line 
+Event: 18.890 Thread 0x000001b4dd35d000 Exception <a 'java/lang/ClassNotFoundException': com/retailersv1/domain/TableProcessDimCustomizer> (0x00000006cd04b738) thrown at [C:\jenkins\workspace\8-2-build-windows-amd64-cygwin\jdk8u301\1513\hotspot\src\share\vm\classfile\systemDictionary.cpp, line 
+Event: 18.901 Thread 0x000001b4dd35c800 Exception <a 'java/lang/ClassNotFoundException': com/retailersv1/domain/TableProcessDimCustomizer> (0x00000006ccd7d188) thrown at [C:\jenkins\workspace\8-2-build-windows-amd64-cygwin\jdk8u301\1513\hotspot\src\share\vm\classfile\systemDictionary.cpp, line 
+Event: 18.903 Thread 0x000001b4dd361000 Exception <a 'java/lang/ClassNotFoundException': com/retailersv1/domain/TableProcessDimCustomizer> (0x00000006ccf03490) thrown at [C:\jenkins\workspace\8-2-build-windows-amd64-cygwin\jdk8u301\1513\hotspot\src\share\vm\classfile\systemDictionary.cpp, line 
+Event: 18.916 Thread 0x000001b4dd361800 Exception <a 'java/lang/ClassNotFoundException': com/retailersv1/domain/TableProcessDimCustomizer> (0x00000006cd22ec18) thrown at [C:\jenkins\workspace\8-2-build-windows-amd64-cygwin\jdk8u301\1513\hotspot\src\share\vm\classfile\systemDictionary.cpp, line 
+
+Events (10 events):
+Event: 19.380 loading class org/apache/kafka/common/message/FetchSnapshotResponseData$LeaderIdAndEpoch
+Event: 19.380 loading class org/apache/kafka/common/message/FetchSnapshotResponseData$LeaderIdAndEpoch done
+Event: 19.381 loading class org/apache/kafka/common/message/DescribeClusterRequestData
+Event: 19.381 loading class org/apache/kafka/common/message/DescribeClusterRequestData done
+Event: 19.381 loading class org/apache/kafka/common/message/DescribeClusterResponseData
+Event: 19.381 loading class org/apache/kafka/common/message/DescribeClusterResponseData done
+Event: 19.387 loading class org/apache/kafka/common/message/DescribeClusterResponseData$DescribeClusterBroker
+Event: 19.387 loading class org/apache/kafka/common/message/DescribeClusterResponseData$DescribeClusterBroker done
+Event: 19.395 loading class org/apache/kafka/common/message/DescribeProducersRequestData
+Event: 19.395 loading class org/apache/kafka/common/message/DescribeProducersRequestData done
+
+
+Dynamic libraries:
+0x00007ff726be0000 - 0x00007ff726c27000 	C:\Program Files\Java\jdk1.8.0_301\bin\java.exe
+0x00007ffacee50000 - 0x00007ffacf067000 	C:\WINDOWS\SYSTEM32\ntdll.dll
+0x00007ffacd210000 - 0x00007ffacd2d4000 	C:\WINDOWS\System32\KERNEL32.DLL
+0x00007ffacc5e0000 - 0x00007ffacc9b2000 	C:\WINDOWS\System32\KERNELBASE.dll
+0x00007ffacd8b0000 - 0x00007ffacd961000 	C:\WINDOWS\System32\ADVAPI32.dll
+0x00007ffacec20000 - 0x00007ffacecc7000 	C:\WINDOWS\System32\msvcrt.dll
+0x00007ffacd750000 - 0x00007ffacd7f8000 	C:\WINDOWS\System32\sechost.dll
+0x00007ffacc440000 - 0x00007ffacc468000 	C:\WINDOWS\System32\bcrypt.dll
+0x00007ffacd980000 - 0x00007ffacda94000 	C:\WINDOWS\System32\RPCRT4.dll
+0x00007ffacd370000 - 0x00007ffacd521000 	C:\WINDOWS\System32\USER32.dll
+0x00007ffacc100000 - 0x00007ffacc126000 	C:\WINDOWS\System32\win32u.dll
+0x00007ffacdaa0000 - 0x00007ffacdac9000 	C:\WINDOWS\System32\GDI32.dll
+0x00007ffacc1f0000 - 0x00007ffacc313000 	C:\WINDOWS\System32\gdi32full.dll
+0x00007ffacc320000 - 0x00007ffacc3ba000 	C:\WINDOWS\System32\msvcp_win.dll
+0x00007ffacc9c0000 - 0x00007ffaccad1000 	C:\WINDOWS\System32\ucrtbase.dll
+0x00007ffab07d0000 - 0x00007ffab0a6b000 	C:\WINDOWS\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.22621.5547_none_27104afb73855772\COMCTL32.dll
+0x00007ffacd0c0000 - 0x00007ffacd0f1000 	C:\WINDOWS\System32\IMM32.DLL
+0x00007ffac1060000 - 0x00007ffac1075000 	C:\Program Files\Java\jdk1.8.0_301\jre\bin\vcruntime140.dll
+0x00007ffa79810000 - 0x00007ffa798ab000 	C:\Program Files\Java\jdk1.8.0_301\jre\bin\msvcp140.dll
+0x0000000055010000 - 0x0000000055870000 	C:\Program Files\Java\jdk1.8.0_301\jre\bin\server\jvm.dll
+0x00007ffacd970000 - 0x00007ffacd978000 	C:\WINDOWS\System32\PSAPI.DLL
+0x00007ffaae220000 - 0x00007ffaae229000 	C:\WINDOWS\SYSTEM32\WSOCK32.dll
+0x00007ffacd6d0000 - 0x00007ffacd741000 	C:\WINDOWS\System32\WS2_32.dll
+0x00007ffac4ce0000 - 0x00007ffac4d14000 	C:\WINDOWS\SYSTEM32\WINMM.dll
+0x00007ffab9b00000 - 0x00007ffab9b0a000 	C:\WINDOWS\SYSTEM32\VERSION.dll
+0x00007ffacb060000 - 0x00007ffacb078000 	C:\WINDOWS\SYSTEM32\kernel.appcore.dll
+0x00007ffac4ed0000 - 0x00007ffac4ee0000 	C:\Program Files\Java\jdk1.8.0_301\jre\bin\verify.dll
+0x00007ffa9af10000 - 0x00007ffa9af3b000 	C:\Program Files\Java\jdk1.8.0_301\jre\bin\java.dll
+0x00007ffac0fc0000 - 0x00007ffac0ff0000 	C:\Program Files\Java\jdk1.8.0_301\jre\bin\instrument.dll
+0x00007ffaa5580000 - 0x00007ffaa5598000 	C:\Program Files\Java\jdk1.8.0_301\jre\bin\zip.dll
+0x00007ffacdae0000 - 0x00007fface382000 	C:\WINDOWS\System32\SHELL32.dll
+0x00007ffacbfc0000 - 0x00007ffacc0ff000 	C:\WINDOWS\System32\wintypes.dll
+0x00007fface690000 - 0x00007ffacea23000 	C:\WINDOWS\System32\combase.dll
+0x00007ffac9e80000 - 0x00007ffaca79d000 	C:\WINDOWS\SYSTEM32\windows.storage.dll
+0x00007fface580000 - 0x00007fface68c000 	C:\WINDOWS\System32\SHCORE.dll
+0x00007ffacd300000 - 0x00007ffacd369000 	C:\WINDOWS\System32\shlwapi.dll
+0x00007ffacbe70000 - 0x00007ffacbe9b000 	C:\WINDOWS\SYSTEM32\profapi.dll
+0x00007ffac0fa0000 - 0x00007ffac0fba000 	D:\soft\software\idea\IntelliJ IDEA 2022.2\bin\breakgen64.dll
+0x00007ffa9e530000 - 0x00007ffa9e54c000 	C:\Program Files\Java\jdk1.8.0_301\jre\bin\net.dll
+0x00007ffacb4e0000 - 0x00007ffacb549000 	C:\WINDOWS\system32\mswsock.dll
+0x00007ffa96a30000 - 0x00007ffa96a43000 	C:\Program Files\Java\jdk1.8.0_301\jre\bin\nio.dll
+0x00007ffacb730000 - 0x00007ffacb74b000 	C:\WINDOWS\SYSTEM32\CRYPTSP.dll
+0x00007ffacafc0000 - 0x00007ffacaff7000 	C:\WINDOWS\system32\rsaenh.dll
+0x00007ffacb5d0000 - 0x00007ffacb5f8000 	C:\WINDOWS\SYSTEM32\USERENV.dll
+0x00007ffacbf40000 - 0x00007ffacbfbb000 	C:\WINDOWS\System32\bcryptprimitives.dll
+0x00007ffacb750000 - 0x00007ffacb75c000 	C:\WINDOWS\SYSTEM32\CRYPTBASE.dll
+0x00007ffacaa70000 - 0x00007ffacaa9d000 	C:\WINDOWS\SYSTEM32\IPHLPAPI.DLL
+0x00007ffacdad0000 - 0x00007ffacdad9000 	C:\WINDOWS\System32\NSI.dll
+0x00007ffac4c50000 - 0x00007ffac4c69000 	C:\WINDOWS\SYSTEM32\dhcpcsvc6.DLL
+0x00007ffac50a0000 - 0x00007ffac50bf000 	C:\WINDOWS\SYSTEM32\dhcpcsvc.DLL
+0x00007ffacaaa0000 - 0x00007ffacab98000 	C:\WINDOWS\SYSTEM32\DNSAPI.dll
+0x00007ffac54e0000 - 0x00007ffac54ed000 	C:\Program Files\Java\jdk1.8.0_301\jre\bin\management.dll
+0x00007ffab3bf0000 - 0x00007ffab3c0a000 	C:\Windows\System32\hadoop.dll
+0x00007ffacabe0000 - 0x00007ffacac30000 	C:\WINDOWS\SYSTEM32\AUTHZ.dll
+0x00007ffa7efa0000 - 0x00007ffa7f08f000 	C:\WINDOWS\SYSTEM32\MSVCR120.dll
+0x00007ffaafef0000 - 0x00007ffaaff09000 	C:\WINDOWS\SYSTEM32\NETAPI32.dll
+0x00007ffabad60000 - 0x00007ffabad79000 	C:\WINDOWS\SYSTEM32\SAMCLI.DLL
+0x00007ffacaa60000 - 0x00007ffacaa6c000 	C:\WINDOWS\SYSTEM32\NETUTILS.DLL
+0x00007ffac1050000 - 0x00007ffac1059000 	C:\Program Files\Java\jdk1.8.0_301\jre\bin\jaas_nt.dll
+0x00007ffa9e740000 - 0x00007ffa9e757000 	C:\WINDOWS\system32\napinsp.dll
+0x00007ffa9e110000 - 0x00007ffa9e12b000 	C:\WINDOWS\system32\pnrpnsp.dll
+0x00007ffa9e0f0000 - 0x00007ffa9e101000 	C:\WINDOWS\System32\winrnr.dll
+0x00007ffac5060000 - 0x00007ffac507f000 	C:\WINDOWS\system32\wshbth.dll
+0x00007ffa9e0c0000 - 0x00007ffa9e0e1000 	C:\WINDOWS\system32\nlansp_c.dll
+0x0000000055870000 - 0x0000000055896000 	C:\Program Files\Bonjour\mdnsNSP.dll
+0x00007ffac5320000 - 0x00007ffac532a000 	C:\Windows\System32\rasadhlp.dll
+0x00007ffabdc80000 - 0x00007ffabdd04000 	C:\WINDOWS\System32\fwpuclnt.dll
+0x00007ffac98a0000 - 0x00007ffac9ad3000 	C:\WINDOWS\SYSTEM32\dbghelp.dll
+0x00007fface3a0000 - 0x00007fface477000 	C:\WINDOWS\System32\OLEAUT32.dll
+
+VM Arguments:
+jvm_args: -javaagent:D:\soft\software\idea\IntelliJ IDEA 2022.2\lib\idea_rt.jar=58429:D:\soft\software\idea\IntelliJ IDEA 2022.2\bin -Dfile.encoding=UTF-8 
+java_command: com.retailersv1.DbusCdc2DimHbaseAnd2DbKafka
+java_class_path (initial): C:\Users\24927\AppData\Local\Temp\classpath1665619519.jar;D:\soft\software\idea\IntelliJ IDEA 2022.2\lib\idea_rt.jar
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+JAVA_HOME=C:\Program Files\Java\jdk1.8.0_301
+PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2\libnvvp;F:\影刀\ShadowBot;C:\Program Files\Java\jdk1.8.0_301\bin;D:\hadoop-3.2.0\bin;D:\xumi\bin\;D:\影刀\ShadowBot;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\dotnet\;D:\soft\software\mysql\mysql-8.0.39-winx64\mysql-8.0.39-winx64\bin;D:\major\apache-maven-3.8.3\apache-maven-3.8.3\bin;D:\Postman and Git\Git\cmd;D:\ANACONDA;D:\ANACONDA\Library\bin;D:\ANACONDA\Scripts;D:\ANACONDA\Library\mingw-w64\bin;D:\ANACONDA\Library\usr\bin;C:\Program Files\NVIDIA Corporation\Nsight Compute 2023.2.0\;D:\ANACONDA\envs\python_project;D:\ANACONDA\envs\python_project\Scripts;F:\Auser\anaconda;F:\Auser\anaconda\Library\mingw-w64\bin;F:\Auser\anaconda\Library\usr\bin;F:\Auser\anaconda\Library\bin;F:\Auser\anaconda\Scripts;F:\影刀\ShadowBot;D:\影刀\ShadowBot;C:\Users\24927\AppData\Local\Microsoft\WindowsApps;D:\hadoop-3.2.0\sbin;D:\hadoop-3.2.0\bin;D:\python\PyCharm Community Edition 2023.2.3\bin;D:\pythonApp\PyCharm 2024.2.4\bin;F:\datagrip\DataGrip 2024.3.5\bin;F:\Auser\ollama;F:\Auser\ASCode\Microsoft VS Code\bin;F:\Auser\DevEco Studio\bin;;F:\Auser\cursor\cursor\resources\app\bin
+USERNAME=24927
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 141 Stepping 1, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows 10.0 , 64 bit Build 22621 (10.0.22621.5415)
+
+CPU:total 12 (initial active 12) (6 cores per cpu, 2 threads per core) family 6 model 141 stepping 1, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, avx, avx2, aes, clmul, erms, 3dnowpref, lzcnt, ht, tsc, tscinvbit, bmi1, bmi2, adx
+
+Memory: 4k page, physical 50051876k(461812k free), swap 89451052k(4284k free)
+
+vm_info: Java HotSpot(TM) 64-Bit Server VM (25.301-b09) for windows-amd64 JRE (1.8.0_301-b09), built on Jun  9 2021 06:46:21 by "java_re" with MS VC++ 15.9 (VS2017)
+
+time: Thu Aug 21 15:23:28 2025
+timezone: 中国标准时间
+elapsed time: 19.484697 seconds (0d 0h 0m 19s)
+

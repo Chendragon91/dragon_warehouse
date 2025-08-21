@@ -11,85 +11,84 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import java.time.Duration;
 
 public class DwdDownOrderSQL {
-    private static String TOPIC_DB = ConfigUtils.getString("kafka.cdc.db.topic");
-    private static String DWD_ORDER_TOPIC = ConfigUtils.getString("kafka.dwd.order.info");
+    private static final String ODS_KAFKA_TOPIC = ConfigUtils.getString("kafka.cdc.db.topic");
+    private static final String DWD_TRADE_ORDER_DETAIL = ConfigUtils.getString("kafka.dwd.order.detail");
+
 
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        EnvironmentSettingUtils.defaultParameter( env);
-        StreamTableEnvironment tenv = StreamTableEnvironment.create(env);
-        tenv.getConfig().setIdleStateRetention(Duration.ofMinutes(5)); // 延长至5分钟
-        // 在创建执行环境后添加
+        EnvironmentSettingUtils.defaultParameter(env);
+
+        StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
+        // 设置状态的保存时长
+        tableEnv.getConfig().setIdleStateRetention(Duration.ofSeconds(10));
         env.setStateBackend(new MemoryStateBackend());
+        tableEnv.executeSql("CREATE TABLE ods_professional (\n" +
+                "  `op` STRING,\n" +
+                "  `before` MAP<STRING,STRING>,\n" +
+                "  `after` MAP<STRING,STRING>,\n" +
+                "  `source` MAP<STRING,STRING>,\n" +
+                "  `ts_ms` BIGINT,\n" +
+                "   proc_time AS proctime()" +
+                ")" + SQLUtil.getKafka(ODS_KAFKA_TOPIC, "test"));
 
-        tenv.executeSql("create table ods_professional(\n" +
-                "    `op` string,\n" +
-                "    `before` map<string,string>,\n" +
-                "    `after` map<string,string>,\n" +
-                "    `source` map<string,string>,\n" +
-                "    `ts_ms` bigint,\n" +
-                "    proc_time as proctime()\n" +
-                ")"+ SQLUtil.getKafka(TOPIC_DB, "test"));
-
-        Table orderDetail = tenv.sqlQuery("select\n" +
-                "    `after`['id'] id,\n" +
-                "    `after`['order_id'] order_id,\n" +
-                "    `after`['sku_id'] sku_id,\n" +
-                "    `after`['sku_name'] sku_name,\n" +
-                "    `after`['create_time'] create_time,\n" +
-                "    `after`['source_id'] source_id,\n" +
-                "    `after`['source_type'] source_type,\n" +
-                "    `after`['sku_num'] sku_num,\n" +
-                "    cast(cast(`after`['sku_num'] as decimal(16,2))*\n" +
-                "         cast(`after`['sku_price'] as decimal(16,2)) as string) split_original_amount,\n" +
-                "    `after`['split_total_amount'] split_total_amount,\n" +
-                "    `after`['split_activity_amount'] split_activity_amount,\n" +
-                "    `after`['split_coupon_amount'] split_coupon_amount,\n" +
-                "    ts_ms as ts\n" +
-                "from ods_professional\n" +
-                "where `source`['table']='order_detail'\n" +
-                "and `op`='r'");
-
-        tenv.createTemporaryView("order_detail", orderDetail);
+        Table orderDetail = tableEnv.sqlQuery(
+                "select " +
+                        "`after`['id'] id," +
+                        "`after`['order_id'] order_id," +
+                        "`after`['sku_id'] sku_id," +
+                        "`after`['sku_name'] sku_name," +
+                        "`after`['create_time'] create_time," +
+                        "`after`['source_id'] source_id," +
+                        "`after`['source_type'] source_type," +
+                        "`after`['sku_num'] sku_num," +
+                        "cast(cast(`after`['sku_num'] as decimal(16,2)) * " +
+                        "   cast(`after`['order_price'] as decimal(16,2)) as String) split_original_amount," + // 分摊原始总金额
+                        "`after`['split_total_amount'] split_total_amount," +  // 分摊总金额
+                        "`after`['split_activity_amount'] split_activity_amount," + // 分摊活动金额
+                        "`after`['split_coupon_amount'] split_coupon_amount," + // 分摊的优惠券金额
+                        "ts_ms " +
+                        "from ods_professional " +
+                        " where `source`['table'] ='order_detail'");
+        tableEnv.createTemporaryView("order_detail", orderDetail);
 
 //        orderDetail.execute().print();
 
-        Table orderInfo = tenv.sqlQuery(
+        // 3. 过滤出 oder_info 数据: insert
+        Table orderInfo = tableEnv.sqlQuery(
                 "select " +
-                        "after['id'] id," +
-                        "after['user_id'] user_id," +
-                        "after['province_id'] province_id " +
+                        "`after`['id'] id," +
+                        "`after`['user_id'] user_id," +
+                        "`after`['province_id'] province_id " +
                         "from ods_professional " +
-                        "where `source`['table']='order_info' " +
-                        "and `op`='r' ");
-        tenv.createTemporaryView("order_info", orderInfo);
-
+                        "where `source`['table'] ='order_info' ");
+        tableEnv.createTemporaryView("order_info", orderInfo);
 //        orderInfo.execute().print();
 
-        Table orderDetailActivity = tenv.sqlQuery(
+        // 4. 过滤order_detail_activity 表: insert
+        Table orderDetailActivity = tableEnv.sqlQuery(
                 "select " +
-                        "after['order_detail_id'] order_detail_id, " +
-                        "after['activity_id'] activity_id, " +
-                        "after['activity_rule_id'] activity_rule_id " +
+                        "`after`['order_detail_id'] order_detail_id, " +
+                        "`after`['activity_id'] activity_id, " +
+                        "`after`['activity_rule_id'] activity_rule_id " +
                         "from ods_professional " +
-                        "where `source`['table'] = 'order_detail_activity' " +
-                        "and `op`='r' ");
-        tenv.createTemporaryView("order_detail_activity", orderDetailActivity);
-
+                        "where `source`['table'] ='order_detail_activity' ");
+        tableEnv.createTemporaryView("order_detail_activity", orderDetailActivity);
 //        orderDetailActivity.execute().print();
 
-        Table orderDetailCoupon = tenv.sqlQuery(
+        // 5. 过滤order_detail_coupon 表: insert
+        Table orderDetailCoupon = tableEnv.sqlQuery(
                 "select " +
-                        "after['order_detail_id'] order_detail_id, " +
-                        "after['coupon_id'] coupon_id " +
+                        "`after`['order_detail_id'] order_detail_id, " +
+                        "`after`['coupon_id'] coupon_id " +
                         "from ods_professional " +
-                        "where `source`['table'] = 'order_detail_coupon' " +
-                        "and `op`='r' ");
-        tenv.createTemporaryView("order_detail_coupon", orderDetailCoupon);
+                        "where `source`['table'] ='order_detail_coupon' ");
+        tableEnv.createTemporaryView("order_detail_coupon", orderDetailCoupon);
 
 //        orderDetailCoupon.execute().print();
 
-        Table result = tenv.sqlQuery(
+        // 6. 四张表 join:
+        Table result = tableEnv.sqlQuery(
                 "select " +
                         "od.id," +
                         "od.order_id," +
@@ -100,25 +99,24 @@ public class DwdDownOrderSQL {
                         "act.activity_id," +
                         "act.activity_rule_id," +
                         "cou.coupon_id," +
-                        "date_format(od.create_time, 'yyyy-MM-dd') date_id," +  // 年月日
+                        "date_format(FROM_UNIXTIME(cast(od.create_time as bigint) / 1000), 'yyyy-MM-dd') date_id," +
                         "od.create_time," +
                         "od.sku_num," +
                         "od.split_original_amount," +
                         "od.split_activity_amount," +
                         "od.split_coupon_amount," +
                         "od.split_total_amount," +
-                        "od.ts " +
+                        "od.ts_ms " +
                         "from order_detail od " +
                         "join order_info oi on od.order_id=oi.id " +
                         "left join order_detail_activity act " +
                         "on od.id=act.order_detail_id " +
                         "left join order_detail_coupon cou " +
                         "on od.id=cou.order_detail_id ");
-
 //        result.execute().print();
 
-        tenv.executeSql(
-                "create table "+DWD_ORDER_TOPIC+"(" +
+        tableEnv.executeSql(
+                "create table `" + DWD_TRADE_ORDER_DETAIL + "`(" +
                         "id string," +
                         "order_id string," +
                         "user_id string," +
@@ -137,9 +135,10 @@ public class DwdDownOrderSQL {
                         "split_total_amount string," +
                         "ts bigint," +
                         "primary key(id) not enforced " +
-                        ")" + SQLUtil.getUpsertKafkaDDL(DWD_ORDER_TOPIC));
+                        ")" + SQLUtil.getUpsertKafkaDDL(DWD_TRADE_ORDER_DETAIL));
 
-        result.executeInsert(DWD_ORDER_TOPIC);
 
+
+        result.executeInsert(DWD_TRADE_ORDER_DETAIL);
     }
 }

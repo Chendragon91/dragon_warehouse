@@ -28,10 +28,12 @@ kafka.page.topic=ods_page_log
 kafka.cdc.db.topic=ods_professional
 kafka.dwd.comment.info=dwd_dic_comment_info
 kafka.dwd.cart.info=dwd_cart_info
-kafka.dwd.order.info=dwd_order_info
-kafka.dwd.cancel.order=dwd_cancel_order
+kafka.dwd.order.detail=dwd_order_detail
+kafka.dwd.cancel.order_detail=dwd_cancel_order_detail
 kafka.dwd.payment.info=dwd_payment_info
-
+kafka.dwd.return.order.info=dwd_return_order_info
+kafka.dwd.return.money.topic=dwd_return_money
+kafka.dwd.base.db=dwd_base_db
 # Zookeeper 本地配置
 zookeeper.server.host.list=cdh01:2181
 
