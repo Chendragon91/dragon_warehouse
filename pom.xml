@@ -46,6 +46,14 @@
 
     <dependencyManagement>
         <dependencies>
+
+
+
+
+
+
+
+
             <!-- flink 相关依赖 开始 -->
 
             <dependency>

@@ -1,4 +1,4 @@
-package com.retailersv1;
+package com.retailersv1.dwd;
 
 import com.alibaba.fastjson.JSONObject; // 使用 FastJSON 的 JSONObject
 

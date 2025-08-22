@@ -176,6 +176,56 @@ Table orderDetailCoupon = tenv.sqlQuery(
 tenv.createTemporaryView("order_detail_coupon", orderDetailCoupon);
         //orderDetailCoupon.execute().print();
 
+create table page_log(
+    common map<string,string>,
+    page map<string,string>,
+    `ts` bigint,
+    et as to_timestamp(ts,3),
+    watermark for et as et
+)
+
+select
+    page['item'] fullword,
+    et
+from page_log
+where page['last_page_id']='search' and page['item_type']='kerword' and page['item'] is not null
+
+select
+    keyword,
+    et
+from search_table
+lateral table (ik_analyze(fullword)) t(keyword)
+
+
+
+select
+    window_start,
+    window_end,
+    keyword,
+    count(*)
+from TABLE (
+  TUMBLE(TABLE split_table, DESCRIPTOR(et), INTERVAL '10' SECONDS))
+group by  window_start, window_end,keyword
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
