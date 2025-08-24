@@ -3,6 +3,7 @@ package com.retailersv1.dws;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.retailersv1.dws.comment.TradeProvinceOrderBean;
+import com.retailersv1.func.AsyncDimFunction;
 import com.retailersv1.func.BeanToJsonStrMapFunction;
 import com.stream.common.utils.ConfigUtils;
 import com.stream.common.utils.DateTimeUtils;
@@ -29,8 +30,10 @@ import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
+import org.apache.hadoop.hbase.util.MD5Hash;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
@@ -39,35 +42,41 @@ import java.util.Date;
 
 public class DwsTradeProvinceOrderWindow {
     private static final String kafka_bootstrap_server = ConfigUtils.getString("kafka.bootstrap.servers");
-    private static final String DWD_ORDER_DETAIL = ConfigUtils.getString("kafka.dwd.order.detail");
+    private static final String DWD_TRADE_ORDER_DETAIL = ConfigUtils.getString("kafka.dwd.order.detail");
+
     @SneakyThrows
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         EnvironmentSettingUtils.defaultParameter(env);
+        env.setParallelism(1);
         env.setStateBackend(new MemoryStateBackend());
         DataStreamSource<String> kafkaSourceDs = env.fromSource(
                 KafkaUtils.buildKafkaSource(
                         kafka_bootstrap_server,
-                        DWD_ORDER_DETAIL,
+                        DWD_TRADE_ORDER_DETAIL,
                         new Date().toString(),
                         OffsetsInitializer.earliest()
-                ), WatermarkStrategy.noWatermarks(), "test"
+                ), WatermarkStrategy.noWatermarks(), "read_kafka_trade_order_detail"
         );
-
+        //TODO 1.过滤空消息  并对流中数据进行类型转换    jsonStr->jsonObj
         SingleOutputStreamOperator<JSONObject> jsonObjDS = kafkaSourceDs.process(
                 new ProcessFunction<String, JSONObject>() {
                     @Override
-                    public void processElement(String s, ProcessFunction<String, JSONObject>.Context context, Collector<JSONObject> collector) throws Exception {
-                        if (s != null) {
-                            JSONObject jsonObject = JSON.parseObject(s);
-                            collector.collect(jsonObject);
+                    public void processElement(String jsonStr, ProcessFunction<String, JSONObject>.Context ctx, Collector<JSONObject> out) throws Exception {
+                        if (jsonStr != null) {
+                            JSONObject jsonObj = JSON.parseObject(jsonStr);
+                            out.collect(jsonObj);
                         }
                     }
                 }
         );
 
-        KeyedStream<JSONObject, String> orderDetailIdKeyedDS = jsonObjDS.keyBy(jsonObject -> jsonObject.getString("id"));
+        //jsonObjDS.print();
 
+        //TODO 2.按照唯一键(订单明细的id)进行分组
+        KeyedStream<JSONObject, String> orderDetailIdKeyedDS = jsonObjDS.keyBy(jsonObj -> jsonObj.getString("id"));
+
+        //TODO 3.去重
         SingleOutputStreamOperator<JSONObject> distinctDS = orderDetailIdKeyedDS.process(
                 new KeyedProcessFunction<String, JSONObject, JSONObject>() {
                     private ValueState<JSONObject> lastJsonObjState;
@@ -94,20 +103,23 @@ public class DwsTradeProvinceOrderWindow {
                     }
                 }
         );
+//        distinctDS.print();
 
+        //TODO 4.指定Watermark以及提取事件时间字段
         SingleOutputStreamOperator<JSONObject> withWatermarkDS = distinctDS.assignTimestampsAndWatermarks(
                 WatermarkStrategy
                         .<JSONObject>forMonotonousTimestamps()
                         .withTimestampAssigner(
                                 new SerializableTimestampAssigner<JSONObject>() {
                                     @Override
-                                    public long extractTimestamp(JSONObject jsonObject, long l) {
-                                        return jsonObject.getLong("ts") * 1000;
+                                    public long extractTimestamp(JSONObject jsonObj, long recordTimestamp) {
+                                        return jsonObj.getLong("ts");
                                     }
                                 }
                         )
         );
 
+        //TODO 5.再次对流中数据进行类型转换  jsonObj->统计的实体类对象
         SingleOutputStreamOperator<TradeProvinceOrderBean> beanDS = withWatermarkDS.map(
                 new MapFunction<JSONObject, TradeProvinceOrderBean>() {
                     @Override
@@ -127,45 +139,71 @@ public class DwsTradeProvinceOrderWindow {
                     }
                 }
         );
-
+//        beanDS.print("aaa");
+        //TODO 6.分组
         KeyedStream<TradeProvinceOrderBean, String> provinceIdKeyedDS = beanDS.keyBy(TradeProvinceOrderBean::getProvinceId);
 
+        //TODO 7.开窗
         WindowedStream<TradeProvinceOrderBean, String, TimeWindow> windowDS = provinceIdKeyedDS.window(TumblingEventTimeWindows.of(org.apache.flink.streaming.api.windowing.time.Time.seconds(10)));
 
-        SingleOutputStreamOperator<TradeProvinceOrderBean> reduceDS = windowDS.reduce(
+        //TODO 8.聚合
+        SingleOutputStreamOperator<TradeProvinceOrderBean> reduceDs = windowDS.reduce(
                 new ReduceFunction<TradeProvinceOrderBean>() {
                     @Override
-                    public TradeProvinceOrderBean reduce(TradeProvinceOrderBean value1, TradeProvinceOrderBean value2) throws Exception {
-                        value1.setOrderAmount(value1.getOrderAmount().add(value2.getOrderAmount()));
-                        value1.getOrderIdSet().addAll(value2.getOrderIdSet());
-                        return value1;
+                    public TradeProvinceOrderBean reduce(TradeProvinceOrderBean t1, TradeProvinceOrderBean t2) throws Exception {
+                        t1.setOrderAmount(t1.getOrderAmount().add(t2.getOrderAmount()));
+                        t1.getOrderIdSet().addAll(t2.getOrderIdSet());
+                        return t1;
                     }
-                },
-                new WindowFunction<TradeProvinceOrderBean, TradeProvinceOrderBean, String, TimeWindow>() {
+                }, new WindowFunction<TradeProvinceOrderBean, TradeProvinceOrderBean, String, TimeWindow>() {
                     @Override
-                    public void apply(String s, TimeWindow window, Iterable<TradeProvinceOrderBean> input, Collector<TradeProvinceOrderBean> out) throws Exception {
-                        TradeProvinceOrderBean orderBean = input.iterator().next();
-                        String stt = DateTimeUtils.tsToDateTime(window.getStart());
-                        String edt = DateTimeUtils.tsToDateTime(window.getEnd());
-                        String curDate = DateTimeUtils.tsToDate(window.getStart());
+                    public void apply(String s, TimeWindow timeWindow, Iterable<TradeProvinceOrderBean> iterable, Collector<TradeProvinceOrderBean> collector) throws Exception {
+                        TradeProvinceOrderBean orderBean = iterable.iterator().next();
+                        String stt = DateTimeUtils.tsToDateTime(timeWindow.getStart());
+                        String edt = DateTimeUtils.tsToDateTime(timeWindow.getEnd());
+                        String curDate = DateTimeUtils.tsToDate(timeWindow.getStart());
                         orderBean.setStt(stt);
                         orderBean.setEdt(edt);
                         orderBean.setCurDate(curDate);
                         orderBean.setOrderCount((long) orderBean.getOrderIdSet().size());
-                        out.collect(orderBean);
+                        collector.collect(orderBean);
+
                     }
                 }
         );
-        reduceDS.print("abc");
 
+//        reduceDs.print("aaa");
+        //TODO 9.关联省份维度
+        SingleOutputStreamOperator<TradeProvinceOrderBean> withProvinceDs = AsyncDataStream.unorderedWait(
+                reduceDs,
+                new AsyncDimFunction<TradeProvinceOrderBean>() {
+                    @Override
+                    public String getRowKey(TradeProvinceOrderBean bean) {
+                        String provinceId = bean.getProvinceId();
+                        String md5provinceId = MD5Hash.getMD5AsHex(provinceId.getBytes(StandardCharsets.UTF_8));
+                        return md5provinceId;
+                    }
 
+                    @Override
+                    public String getTableName() {
+                        return "dim_base_province";
+                    }
+
+                    @Override
+                    public void addDims(TradeProvinceOrderBean bean, JSONObject dim) {
+                        if (dim != null){
+                            bean.setProvinceName(dim.getString("name"));
+                        }
+
+                    }
+                }, 60, TimeUnit.SECONDS);
+        withProvinceDs.print();
         //TODO 10.将关联的结果写到Doris中
-        reduceDS
+        withProvinceDs
                 .map(new BeanToJsonStrMapFunction<>())
                 .sinkTo(DorisUtils.getDorisSink("dws_trade_province_order_window"));
 
         env.execute();
-
     }
 }
 

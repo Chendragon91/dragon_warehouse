@@ -3,13 +3,18 @@ package com.retailersv1.dws;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.retailersv1.dws.comment.TradeSkuOrderBean;
+import com.retailersv1.func.AsyncDimFunction;
+import com.retailersv1.func.BeanToJsonStrMapFunction;
 import com.stream.common.utils.ConfigUtils;
+import com.stream.common.utils.DateTimeUtils;
 import com.stream.common.utils.EnvironmentSettingUtils;
 import com.stream.common.utils.KafkaUtils;
+import com.stream.utils.DorisUtils;
 import lombok.SneakyThrows;
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.common.state.StateTtlConfig;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
@@ -17,20 +22,24 @@ import org.apache.flink.api.common.time.Time;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.runtime.state.memory.MemoryStateBackend;
-import org.apache.flink.streaming.api.datastream.DataStreamSource;
-import org.apache.flink.streaming.api.datastream.KeyedStream;
-import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.datastream.*;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
+import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
+import org.apache.hadoop.hbase.util.MD5Hash;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class DwsTradeSkuOrderWindowSyncCache {
     private static final String kafka_bootstrap_server = ConfigUtils.getString("kafka.bootstrap.servers");
-    private static final String DWD_TRADE_ORDER_DETAIL = ConfigUtils.getString("kafka.dwd.trade.order.detail");
+    private static final String DWD_TRADE_ORDER_DETAIL = ConfigUtils.getString("kafka.dwd.order.detail");
 
 
     @SneakyThrows
@@ -183,8 +192,246 @@ public class DwsTradeSkuOrderWindowSyncCache {
                 }
         );
 
-        beanDS.print();
+//        beanDS.print();
+        //TODO 6.分组
+        KeyedStream<TradeSkuOrderBean, String> skuIdKeyedDS = beanDS.keyBy(TradeSkuOrderBean::getSkuId);
 
+        //TODO 7.开窗
+        WindowedStream<TradeSkuOrderBean, String, TimeWindow> windowDS = skuIdKeyedDS.window(TumblingEventTimeWindows.of(org.apache.flink.streaming.api.windowing.time.Time.seconds(5)));
+
+        SingleOutputStreamOperator<TradeSkuOrderBean> reduceDs = windowDS.reduce(
+                new ReduceFunction<TradeSkuOrderBean>() {
+                    @Override
+                    public TradeSkuOrderBean reduce(TradeSkuOrderBean t1, TradeSkuOrderBean t2) throws Exception {
+                        t1.setOrderAmount(t1.getOrderAmount().add(t2.getOrderAmount()));
+                        t1.setActivityReduceAmount(t1.getActivityReduceAmount().add(t2.getActivityReduceAmount()));
+                        t1.setCouponReduceAmount(t1.getCouponReduceAmount().add(t2.getCouponReduceAmount()));
+                        t1.setOriginalAmount(t1.getOriginalAmount().add(t2.getOriginalAmount()));
+                        return t1;
+                    }
+                }, new ProcessWindowFunction<TradeSkuOrderBean, TradeSkuOrderBean, String, TimeWindow>() {
+                    @Override
+                    public void process(String s, ProcessWindowFunction<TradeSkuOrderBean, TradeSkuOrderBean, String, TimeWindow>.Context context, Iterable<TradeSkuOrderBean> iterable, Collector<TradeSkuOrderBean> collector) throws Exception {
+                        TradeSkuOrderBean orderBean = iterable.iterator().next();
+                        TimeWindow window = context.window();
+                        String stt = DateTimeUtils.tsToDateTime(window.getStart());
+                        String edt = DateTimeUtils.tsToDateTime(window.getEnd());
+                        String curDate = DateTimeUtils.tsToDate(window.getStart());
+                        orderBean.setStt(stt);
+                        orderBean.setEdt(edt);
+                        orderBean.setCurDate(curDate);
+                        collector.collect(orderBean);
+                    }
+                }
+        );
+//        reduceDs.print();
+        /*
+                SingleOutputStreamOperator<TradeSkuOrderBean> withSkuInfoDS = reduceDs.map(
+                new RichMapFunction<TradeSkuOrderBean, TradeSkuOrderBean>() {
+                    private Connection hbaseConn;
+
+                    @Override
+                    public void open(Configuration parameters) throws Exception {
+                        hbaseConn = HBaseUtil.getHBaseConnection();
+                    }
+
+                    @Override
+                    public void close() throws Exception {
+                        HBaseUtil.closeHBaseConnection(hbaseConn);
+                    }
+
+                    @Override
+                    public TradeSkuOrderBean map(TradeSkuOrderBean orderBean) throws Exception {
+                        String skuId = orderBean.getSkuId();
+                        String md5EncodedSkuId = MD5Hash.getMD5AsHex(skuId.getBytes(StandardCharsets.UTF_8));
+                        JSONObject skuInfoJsonObj = HBaseUtil.getRow(hbaseConn, HBASE_NAME_SPACE, "dim_sku_info", md5EncodedSkuId, JSONObject.class);
+                        orderBean.setSkuName(skuInfoJsonObj.getString("sku_name"));
+                        orderBean.setSpuId(skuInfoJsonObj.getString("spu_id"));
+                        orderBean.setCategory3Id(skuInfoJsonObj.getString("category3_id"));
+                        orderBean.setTrademarkId(skuInfoJsonObj.getString("tm_id"));
+                        return orderBean;
+                    }
+                }
+        );
+        withSkuInfoDS.print();
+         */
+        SingleOutputStreamOperator<TradeSkuOrderBean> withSkuInfoDS = AsyncDataStream.unorderedWait(
+                reduceDs,
+                new AsyncDimFunction<TradeSkuOrderBean>() {
+                    @Override
+                    public void addDims(TradeSkuOrderBean orderBean, JSONObject dimJsonObj) {
+                        orderBean.setSkuName(dimJsonObj.getString("sku_name"));
+                        orderBean.setSpuId(dimJsonObj.getString("spu_id"));
+                        orderBean.setCategory3Id(dimJsonObj.getString("category3_id"));
+                        orderBean.setTrademarkId(dimJsonObj.getString("tm_id"));
+                    }
+
+                    @Override
+                    public String getTableName() {
+                        return "dim_sku_info";
+                    }
+
+                    @Override
+                    public String getRowKey(TradeSkuOrderBean orderBean) {
+                        String skuId = orderBean.getSkuId();
+                        String md5EncodedSkuId = MD5Hash.getMD5AsHex(skuId.getBytes(StandardCharsets.UTF_8));
+
+                        return md5EncodedSkuId;
+                    }
+                },
+                60,
+                TimeUnit.SECONDS
+        );
+
+//        withSkuInfoDS.print();
+        //TODO 10.关联spu维度
+        SingleOutputStreamOperator<TradeSkuOrderBean> withSpuInfoDS = AsyncDataStream.unorderedWait(
+                withSkuInfoDS,
+                new AsyncDimFunction<TradeSkuOrderBean>() {
+                    @Override
+                    public void addDims(TradeSkuOrderBean orderBean, JSONObject dimJsonObj) {
+                        orderBean.setSpuName(dimJsonObj.getString("spu_name"));
+                    }
+
+                    @Override
+                    public String getTableName() {
+                        return "dim_spu_info";
+                    }
+
+                    @Override
+                    public String getRowKey(TradeSkuOrderBean orderBean) {
+                        String spuId = orderBean.getSpuId();
+                        String md5EncodedSpuId = MD5Hash.getMD5AsHex(spuId.getBytes(StandardCharsets.UTF_8));
+
+                        return md5EncodedSpuId;
+                    }
+                },
+                60,
+                TimeUnit.SECONDS
+        );
+//        withSpuInfoDS.print();
+        //TODO 11.关联tm维度
+        SingleOutputStreamOperator<TradeSkuOrderBean> withTmDS = AsyncDataStream.unorderedWait(
+                withSpuInfoDS,
+                new AsyncDimFunction<TradeSkuOrderBean>() {
+                    @Override
+                    public void addDims(TradeSkuOrderBean orderBean, JSONObject dimJsonObj) {
+                        if (dimJsonObj != null) {
+                            String tm_name = dimJsonObj.getString("tm_name");
+                            orderBean.setTrademarkName(tm_name);
+                        }
+                    }
+
+                    @Override
+                    public String getTableName() {
+                        return "dim_base_trademark";
+                    }
+
+                    @Override
+                    public String getRowKey(TradeSkuOrderBean orderBean) {
+                        String trademarkId = orderBean.getTrademarkId() ;
+                        String md5trademarkId = MD5Hash.getMD5AsHex(trademarkId.getBytes(StandardCharsets.UTF_8));
+
+                        return md5trademarkId;
+                    }
+                },
+                60,
+                TimeUnit.SECONDS
+        );
+//        withTmDS.print();
+
+        //TODO 12.关联category3维度
+        SingleOutputStreamOperator<TradeSkuOrderBean> c3Stream = AsyncDataStream.unorderedWait(
+                withTmDS,
+                new AsyncDimFunction<TradeSkuOrderBean>() {
+                    @Override
+                    public String getRowKey(TradeSkuOrderBean bean) {
+                        String category3Id = bean.getCategory3Id();
+                        String md5category3Id = MD5Hash.getMD5AsHex(category3Id.getBytes(StandardCharsets.UTF_8));
+
+                        return md5category3Id;
+                    }
+
+                    @Override
+                    public String getTableName() {
+                        return "dim_base_category3";
+                    }
+
+                    @Override
+                    public void addDims(TradeSkuOrderBean bean, JSONObject dim) {
+                        if (dim != null){
+                            bean.setCategory3Name(dim.getString("name"));
+                            bean.setCategory2Id(dim.getString("category2_id"));
+                        }
+                    }
+                },
+                120,
+                TimeUnit.SECONDS
+        );
+//        c3Stream.print();
+
+        //TODO 13.关联category2维度
+        SingleOutputStreamOperator<TradeSkuOrderBean> c2Stream = AsyncDataStream.unorderedWait(
+                c3Stream,
+                new AsyncDimFunction<TradeSkuOrderBean>() {
+                    @Override
+                    public String getRowKey(TradeSkuOrderBean bean) {
+                        String category2Id = bean.getCategory2Id();
+                        String md5category2Id = MD5Hash.getMD5AsHex(category2Id.getBytes(StandardCharsets.UTF_8));
+
+                        return md5category2Id;
+                    }
+
+                    @Override
+                    public String getTableName() {
+                        return "dim_base_category2";
+                    }
+
+                    @Override
+                    public void addDims(TradeSkuOrderBean bean, JSONObject dim) {
+                        if (dim != null){
+                            bean.setCategory2Name(dim.getString("name"));
+                            bean.setCategory1Id(dim.getString("category1_id"));
+                        }
+                    }
+                },
+                120,
+                TimeUnit.SECONDS
+        );
+
+        //TODO 14.关联category1维度
+        SingleOutputStreamOperator<TradeSkuOrderBean> withC1DS = AsyncDataStream.unorderedWait(
+                c2Stream,
+                new AsyncDimFunction<TradeSkuOrderBean>() {
+                    @Override
+                    public String getRowKey(TradeSkuOrderBean bean) {
+                        String category1Id = bean.getCategory1Id();
+                        String md5category1Id = MD5Hash.getMD5AsHex(category1Id.getBytes(StandardCharsets.UTF_8));
+                        return md5category1Id;
+                    }
+
+                    @Override
+                    public String getTableName() {
+                        return "dim_base_category1";
+                    }
+
+                    @Override
+                    public void addDims(TradeSkuOrderBean bean, JSONObject dim) {
+                        if (dim != null){
+                            bean.setCategory1Name(dim.getString("name"));
+                        }
+                    }
+                },
+                120,
+                TimeUnit.SECONDS
+        );
+
+        withC1DS.print();
+
+        //TODO 15.将关联的结果写到Doris表中
+        withC1DS
+                .map(new BeanToJsonStrMapFunction<>())
+                .sinkTo(DorisUtils.getDorisSink("dws_trade_sku_order_window"));
 
 
         env.execute();
