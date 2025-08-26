@@ -27,7 +27,7 @@ kafka.err.log=err_log
 kafka.start.log=start_log
 kafka.display.log=display_log
 kafka.action.log=action_log
-kafka.page.topic=ods_page_log
+kafka.page.topic=page_log
 kafka.cdc.db.topic=ods_professional
 kafka.dwd.comment.info=dwd_dic_comment_info
 kafka.dwd.cart.info=dwd_cart_info
@@ -38,6 +38,17 @@ kafka.dwd.return.order.info=dwd_return_order_info
 kafka.dwd.return.money.topic=dwd_return_money
 kafka.dwd.base.db=dwd_base_db
 kafka.dws.page.log=dws_page_log
+
+# realtimeV2
+kafka.log.data.topic=log_data
+REALTIME.KAFKA.LOG.TOPIC.V2=realtimeV2_log
+
+
+
+
+
+
+
 # Zookeeper 本地配置
 zookeeper.server.host.list=cdh01:2181
 
