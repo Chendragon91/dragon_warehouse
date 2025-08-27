@@ -3,14 +3,14 @@ env=dev
 # MySQL 本地开发配置
 mysql.host=cdh03
 mysql.port=3306
-mysql.url=jdbc:mysql://cdh03:3306/realtime_v1?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+mysql.url=jdbc:mysql://cdh03:3306/realtime_v2?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
 mysql.timezone=Asia/Shanghai
-mysql.database=realtime_v1
+mysql.database=realtime_v2
 mysql.user=root
 mysql.pwd=123456
-mysql.databases.conf=realtime_v1_config
-dws.mysql.url=jdbc:mysql://cdh01:3306/gmall2025_realtime?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-dws.mysql.database=gmall2025_realtime
+mysql.databases.conf=realtime_v2_config
+dws.mysql.url=jdbc:mysql://cdh01:3306/realtime_V2?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+dws.mysql.database=realtime_V2
 
 
 # Redis 本地配置
