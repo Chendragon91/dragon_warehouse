@@ -42,7 +42,7 @@ kafka.dws.page.log=dws_page_log
 # realtimeV2
 kafka.log.data.topic=log_data
 REALTIME.KAFKA.LOG.TOPIC.V2=realtimeV2_log
-
+dwd.traffic.page.view.inc.topic=dwd_traffic_page_view_inc
 
 
 
@@ -60,7 +60,7 @@ ali.pwd=
 
 
 # HBase配置
-hbase.namespace=default
+hbase.namespace=realtime_V2
 
 
 
