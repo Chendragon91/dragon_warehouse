@@ -1,157 +1,197 @@
 package com.realtimeV2.dws;
 
-import com.realtimeV2.KafkaTopicUtils;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.flink.api.common.functions.AggregateFunction;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.table.api.TableResult;
-import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
+import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;   // 你项目当前使用的老API（已弃用提示无碍编译）
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;  // 同上
+import org.apache.flink.util.Collector;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Properties;
+
+/**
+ * DWS - 流量总览：从 Kafka 读 V2_DWD 页面日志 -> 计算 UV/PV/跳失率 -> 写入 V2_DWS
+ */
 public class DwsTrafficOverview {
 
-    private static final String BROKERS = "cdh01:9092";
-    private static final String GROUP_ID = "dws_traffic_overview_group";
+    // TODO: 替换为你的 Kafka 地址
+    private static final String BOOTSTRAP_SERVERS = "localhost:9092";
+
+    // 结合你的截图，主题名使用 V2_ 前缀
+    private static final String SRC_TOPIC  = "V2_dwd_page_log";
+    private static final String SINK_TOPIC = "V2_dws_traffic_overview";
+    private static final String GROUP_ID   = "V2_dws_traffic_overview";
 
     public static void main(String[] args) throws Exception {
-
-        // 1. Flink 执行环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(3);
-        StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
+        env.setParallelism(4);
 
-        // 2. 创建 Kafka 目标 topic（分钟、小时、天）
-        KafkaTopicUtils.createTopic(BROKERS, "dws_traffic_overview_minute", 3, (short) 2);
-        KafkaTopicUtils.createTopic(BROKERS, "dws_traffic_overview_hour", 3, (short) 2);
-        KafkaTopicUtils.createTopic(BROKERS, "dws_traffic_overview_day", 3, (short) 2);
+        // 1) Kafka Source（老API，与你DWD一致）
+        Properties srcProps = new Properties();
+        srcProps.setProperty("bootstrap.servers", BOOTSTRAP_SERVERS);
+        srcProps.setProperty("group.id", GROUP_ID);
+        // 如果你DWD里还有别的属性（如auto.offset.reset等），照抄加到这里即可
+        FlinkKafkaConsumer<String> source = new FlinkKafkaConsumer<>(
+                SRC_TOPIC, new SimpleStringSchema(), srcProps
+        );
+        source.setStartFromLatest(); // 与你现有习惯一致，如需重跑可改为 setStartFromEarliest()
 
-        // 3. 读取 DWD 流量明细表
-        tableEnv.executeSql(
-                "CREATE TABLE dwd_page_log (" +
-                        "   common MAP<STRING, STRING>, " +
-                        "   page MAP<STRING, STRING>, " +
-                        "   ts BIGINT, " +
-                        "   et ARRAY<MAP<STRING, STRING>>, " +
-                        "   user_id STRING, " +
-                        "   session_id STRING, " +
-                        "   rowtime AS TO_TIMESTAMP_LTZ(ts, 3), " +
-                        "   WATERMARK FOR rowtime AS rowtime - INTERVAL '5' SECOND " +
-                        ") WITH (" +
-                        "   'connector' = 'kafka'," +
-                        "   'topic' = 'V2_dwd_page_log'," +
-                        "   'properties.bootstrap.servers' = '" + BROKERS + "'," +
-                        "   'properties.group.id' = '" + GROUP_ID + "'," +
-                        "   'format' = 'json'," +
-                        "   'scan.startup.mode' = 'latest-offset'" +
-                        ")"
+        DataStreamSource<String> pageLogDS = env.addSource(source);
+
+        // 2) String -> JSON
+        SingleOutputStreamOperator<JSONObject> jsonDS = pageLogDS.map(
+                (MapFunction<String, JSONObject>) JSON::parseObject
         );
 
-        // 4. 统计分钟级流量
-        tableEnv.executeSql(
-                "CREATE VIEW traffic_minute AS " +
-                        "SELECT " +
-                        "   DATE_FORMAT(window_start, 'yyyy-MM-dd HH:mm:ss') AS stt, " +
-                        "   DATE_FORMAT(window_end, 'yyyy-MM-dd HH:mm:ss') AS edt, " +
-                        "   DATE_FORMAT(window_start, 'yyyy-MM-dd HH:mm') AS cur_minute, " +
-                        "   COUNT(*) AS pv, " +
-                        "   COUNT(DISTINCT user_id) AS uv, " +
-                        "   COUNT(DISTINCT session_id) AS sv, " +
-                        "   SUM(CASE WHEN page['last_page_id'] IS NULL THEN 1 ELSE 0 END) AS uj " +
-                        "FROM TABLE( " +
-                        "   TUMBLE(TABLE dwd_page_log, DESCRIPTOR(rowtime), INTERVAL '1' MINUTE)" +
-                        ") GROUP BY window_start, window_end"
+        // 3) 1分钟滚动窗口：UV、PV、跳失率（简化：last_page_id为空视作一次进入会话且跳出）
+        SingleOutputStreamOperator<TrafficOverviewBean> trafficDS = jsonDS
+                .keyBy(obj -> "all") // 全局单 key
+                .window(TumblingProcessingTimeWindows.of(Time.minutes(1)))
+                .aggregate(new TrafficAgg(), new TrafficWindowFunc());
+
+        // 4) 写 Kafka Sink（老API，与你DWD一致）
+        Properties sinkProps = new Properties();
+        sinkProps.setProperty("bootstrap.servers", BOOTSTRAP_SERVERS);
+
+        FlinkKafkaProducer<String> sink = new FlinkKafkaProducer<>(
+                SINK_TOPIC, new SimpleStringSchema(), sinkProps
         );
 
-        // 5. 统计小时级流量
-        tableEnv.executeSql(
-                "CREATE VIEW traffic_hour AS " +
-                        "SELECT " +
-                        "   DATE_FORMAT(window_start, 'yyyy-MM-dd HH:mm:ss') AS stt, " +
-                        "   DATE_FORMAT(window_end, 'yyyy-MM-dd HH:mm:ss') AS edt, " +
-                        "   DATE_FORMAT(window_start, 'yyyy-MM-dd HH') AS cur_hour, " +
-                        "   COUNT(*) AS pv, " +
-                        "   COUNT(DISTINCT user_id) AS uv, " +
-                        "   COUNT(DISTINCT session_id) AS sv, " +
-                        "   SUM(CASE WHEN page['last_page_id'] IS NULL THEN 1 ELSE 0 END) AS uj " +
-                        "FROM TABLE( " +
-                        "   TUMBLE(TABLE dwd_page_log, DESCRIPTOR(rowtime), INTERVAL '1' HOUR)" +
-                        ") GROUP BY window_start, window_end"
-        );
+        trafficDS
+                .map(JSON::toJSONString)
+                .addSink(sink);
 
-        // 6. 统计天级流量
-        tableEnv.executeSql(
-                "CREATE VIEW traffic_day AS " +
-                        "SELECT " +
-                        "   DATE_FORMAT(window_start, 'yyyy-MM-dd HH:mm:ss') AS stt, " +
-                        "   DATE_FORMAT(window_end, 'yyyy-MM-dd HH:mm:ss') AS edt, " +
-                        "   DATE_FORMAT(window_start, 'yyyy-MM-dd') AS cur_date, " +
-                        "   COUNT(*) AS pv, " +
-                        "   COUNT(DISTINCT user_id) AS uv, " +
-                        "   COUNT(DISTINCT session_id) AS sv, " +
-                        "   SUM(CASE WHEN page['last_page_id'] IS NULL THEN 1 ELSE 0 END) AS uj " +
-                        "FROM TABLE( " +
-                        "   TUMBLE(TABLE dwd_page_log, DESCRIPTOR(rowtime), INTERVAL '1' DAY)" +
-                        ") GROUP BY window_start, window_end"
-        );
+        env.execute("DwsTrafficOverview");
+    }
 
-        // 7. Kafka Sink（分钟）
-        tableEnv.executeSql(
-                "CREATE TABLE dws_traffic_overview_minute (" +
-                        "   stt STRING, " +
-                        "   edt STRING, " +
-                        "   cur_minute STRING, " +
-                        "   pv BIGINT, " +
-                        "   uv BIGINT, " +
-                        "   sv BIGINT, " +
-                        "   uj BIGINT " +
-                        ") WITH (" +
-                        "   'connector' = 'kafka'," +
-                        "   'topic' = 'dws_traffic_overview_minute'," +
-                        "   'properties.bootstrap.servers' = '" + BROKERS + "'," +
-                        "   'format' = 'json'" +
-                        ")"
-        );
+    // --- Bean ---
+    public static class TrafficOverviewBean {
+        public String stt;   // 窗口起始
+        public String edt;   // 窗口结束
+        public Long uvCt;    // 访客数
+        public Long pvCt;    // 浏览量
+        public Double bounceRate; // 跳失率(粗略)
+        public Long payUserCt;    // 支付人数(预留)
+        public Double payAmount;  // 支付金额(预留)
+        public Double conversionRate; // 转化率(预留)
 
-        // 8. Kafka Sink（小时）
-        tableEnv.executeSql(
-                "CREATE TABLE dws_traffic_overview_hour (" +
-                        "   stt STRING, " +
-                        "   edt STRING, " +
-                        "   cur_hour STRING, " +
-                        "   pv BIGINT, " +
-                        "   uv BIGINT, " +
-                        "   sv BIGINT, " +
-                        "   uj BIGINT " +
-                        ") WITH (" +
-                        "   'connector' = 'kafka'," +
-                        "   'topic' = 'dws_traffic_overview_hour'," +
-                        "   'properties.bootstrap.servers' = '" + BROKERS + "'," +
-                        "   'format' = 'json'" +
-                        ")"
-        );
+        public TrafficOverviewBean() {}
 
-        // 9. Kafka Sink（天）
-        tableEnv.executeSql(
-                "CREATE TABLE dws_traffic_overview_day (" +
-                        "   stt STRING, " +
-                        "   edt STRING, " +
-                        "   cur_date STRING, " +
-                        "   pv BIGINT, " +
-                        "   uv BIGINT, " +
-                        "   sv BIGINT, " +
-                        "   uj BIGINT " +
-                        ") WITH (" +
-                        "   'connector' = 'kafka'," +
-                        "   'topic' = 'dws_traffic_overview_day'," +
-                        "   'properties.bootstrap.servers' = '" + BROKERS + "'," +
-                        "   'format' = 'json'" +
-                        ")"
-        );
+        public TrafficOverviewBean(String stt, String edt, Long uvCt, Long pvCt,
+                                   Double bounceRate, Long payUserCt,
+                                   Double payAmount, Double conversionRate) {
+            this.stt = stt;
+            this.edt = edt;
+            this.uvCt = uvCt;
+            this.pvCt = pvCt;
+            this.bounceRate = bounceRate;
+            this.payUserCt = payUserCt;
+            this.payAmount = payAmount;
+            this.conversionRate = conversionRate;
+        }
+    }
 
-        // 10. 执行 INSERT 并阻塞
-        TableResult res1 = tableEnv.executeSql("INSERT INTO dws_traffic_overview_minute SELECT * FROM traffic_minute");
-        TableResult res2 = tableEnv.executeSql("INSERT INTO dws_traffic_overview_hour SELECT * FROM traffic_hour");
-        TableResult res3 = tableEnv.executeSql("INSERT INTO dws_traffic_overview_day SELECT * FROM traffic_day");
+    /**
+     * 累加器: (uvSet, pv, sessionCount, bounceCount)
+     */
+    public static class TrafficAgg implements AggregateFunction<JSONObject,
+            Tuple4<HashSet<String>, Long, Long, Long>,
+            Tuple4<Long, Long, Long, Long>> {
 
-        res1.getJobClient().get().getJobExecutionResult().get();
-        res2.getJobClient().get().getJobExecutionResult().get();
-        res3.getJobClient().get().getJobExecutionResult().get();
+        @Override
+        public Tuple4<HashSet<String>, Long, Long, Long> createAccumulator() {
+            return Tuple4.of(new HashSet<>(), 0L, 0L, 0L);
+        }
+
+        @Override
+        public Tuple4<HashSet<String>, Long, Long, Long> add(JSONObject v,
+                                                             Tuple4<HashSet<String>, Long, Long, Long> acc) {
+            if (v == null) {
+                return acc;
+            }
+
+            // UV
+            String uid = v.getString("user_id");
+            if (uid != null) {
+                acc.f0.add(uid);
+            }
+
+            // PV
+            acc.f1 += 1;
+
+            // 简化跳失：last_page_id 为空 -> 进入会话 + 跳出
+            JSONObject page = v.getJSONObject("page");
+            if (page != null) {
+                String lastPage = page.getString("last_page_id");
+                if (lastPage == null || lastPage.isEmpty()) {
+                    acc.f2 += 1; // session++
+                    acc.f3 += 1; // bounce++
+                }
+            }
+            return acc;
+        }
+
+        @Override
+        public Tuple4<HashSet<String>, Long, Long, Long> merge(
+                Tuple4<HashSet<String>, Long, Long, Long> a,
+                Tuple4<HashSet<String>, Long, Long, Long> b) {
+            a.f0.addAll(b.f0);
+            return Tuple4.of(a.f0, a.f1 + b.f1, a.f2 + b.f2, a.f3 + b.f3);
+        }
+
+        @Override
+        public Tuple4<Long, Long, Long, Long> getResult(
+                Tuple4<HashSet<String>, Long, Long, Long> acc) {
+            return Tuple4.of((long) acc.f0.size(), acc.f1, acc.f2, acc.f3);
+        }
+    }
+
+    // --- 窗口收尾 ---
+    public static class TrafficWindowFunc extends ProcessWindowFunction<
+            Tuple4<Long, Long, Long, Long>, TrafficOverviewBean, String, TimeWindow> {
+
+        @Override
+        public void process(String key,
+                            Context ctx,
+                            Iterable<Tuple4<Long, Long, Long, Long>> it,
+                            Collector<TrafficOverviewBean> out) {
+
+            Tuple4<Long, Long, Long, Long> r = it.iterator().next();
+            long uv = r.f0;
+            long pv = r.f1;
+            long session = r.f2;
+            long bounce = r.f3;
+
+            double bounceRate = session == 0 ? 0.0 : (bounce * 1.0 / session);
+
+            // 支付指标留口，后续和 V2_dwd_payment_info 关联
+            long payUserCt = 0L;
+            double payAmount = 0.0;
+            double conversionRate = uv == 0 ? 0.0 : (payUserCt * 1.0 / uv);
+
+            String stt = tsFormat(ctx.window().getStart());
+            String edt = tsFormat(ctx.window().getEnd());
+
+            out.collect(new TrafficOverviewBean(stt, edt, uv, pv, bounceRate, payUserCt, payAmount, conversionRate));
+        }
+    }
+
+    private static String tsFormat(long ts) {
+        return Instant.ofEpochMilli(ts).atZone(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 }
